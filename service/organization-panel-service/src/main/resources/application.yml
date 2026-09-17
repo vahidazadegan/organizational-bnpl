@@ -21,11 +21,21 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
+
+app:
   security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: ${OAUTH2_ISSUER_URI:http://localhost:8081/realms/bnpl}
+    jwt:
+      secret: ${JWT_SECRET:change-me-to-a-dev-secret-key-32b-min}
+      issuer: ${JWT_ISSUER:organization-panel-service}
+      expiration-seconds: ${JWT_EXPIRATION_SECONDS:3600}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
 
 management:
   endpoints:

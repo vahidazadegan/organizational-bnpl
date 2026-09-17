@@ -10,25 +10,25 @@ alwaysApply: false
 - Prefer layered structure: controller → service → repository (or equivalent package layout already in the module).
 - Use constructor injection; avoid field injection.
 - Keep REST APIs explicit: request/response DTOs, validation (`@Valid`), meaningful HTTP status codes.
+- Do **not** put `/api` on controller `@RequestMapping` / `@*Mapping`. A global path prefix `/api` is applied in `WebConfig` for the `controller` package. Controllers use resource paths only (e.g. `/auth`, `/health`, `/organizations`).
 - Do not expose JPA/entities directly from controllers when DTOs exist or are the project pattern.
 - Centralize error handling (e.g. `@ControllerAdvice`) instead of ad-hoc try/catch in every endpoint.
 - Configuration via `application.yml` / profiles; never commit secrets.
 - Prefer Spring Data / Spring Web patterns already present in the module; do not add a second web stack.
+- API documentation via **springdoc-openapi** (Swagger UI). Keep docs endpoints public in SecurityConfig; document JWT bearer auth in `OpenApiConfig`.
 
 ```java
-// ✅ Constructor injection + DTO
+// ✅ Constructor injection + DTO — no /api on the controller
 @RestController
-@RequestMapping("/api/organizations")
+@RequestMapping("/organizations")
+@RequiredArgsConstructor
 public class OrganizationController {
   private final OrganizationService organizationService;
 
-  public OrganizationController(OrganizationService organizationService) {
-    this.organizationService = organizationService;
-  }
-
   @GetMapping("/{id}")
-  public OrganizationResponse get(@PathVariable Long id) {
+  public OrganizationResponse get(@PathVariable UUID id) {
     return organizationService.getById(id);
   }
 }
+// Public URL is still /api/organizations/{id} via WebConfig path prefix
 ```

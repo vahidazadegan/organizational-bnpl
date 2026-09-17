@@ -1,13 +1,13 @@
 import { Box, Container } from "@mui/material";
 import type { Metadata } from "next";
-import { LoginForm } from "@/components/login/LoginForm";
+import { WelcomeMessage } from "@/components/welcome/WelcomeMessage";
 
 export const metadata: Metadata = {
-  title: "ورود | Organization Panel",
-  description: "ورود به پنل سازمانی",
+  title: "خوش آمدید | Organization Panel",
+  description: "صفحه خوش‌آمدگویی پس از ورود",
 };
 
-export default function LoginPage() {
+export default function WelcomePage() {
   return (
     <Box
       component="main"
@@ -19,7 +19,7 @@ export default function LoginPage() {
       }}
     >
       <Container maxWidth="sm" sx={{ py: 6, display: "flex", justifyContent: "center" }}>
-        <LoginForm />
+        <WelcomeMessage />
       </Container>
     </Box>
   );

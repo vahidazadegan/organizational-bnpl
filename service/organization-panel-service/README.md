@@ -27,15 +27,32 @@ cd docker-compose-dev
 docker compose up -d
 ```
 
-## Security (OAuth2 Resource Server)
+## Security (panel login + JWT)
 
-API endpoints (except health) require a Bearer JWT issued by your OAuth2/OIDC provider.
+Panel users authenticate against `panel_users` with username/password. Successful login returns a Bearer JWT that must be sent on subsequent API calls.
+
+### Login
+
+```http
+POST /api/auth/login
+Content-Type: application/json
+
+{"username":"panel.admin","password":"..."}
+```
+
+Response includes `accessToken`, `tokenType` (`Bearer`), `expiresIn`, and `user`.
+
+Passwords in DB are **BCrypt** hashes (`password_hash`). Only users with `status=ACTIVE` can log in.
+
+### JWT config
 
 | Setting | Env / default |
 |---------|----------------|
-| Issuer URI | `OAUTH2_ISSUER_URI` (default `http://localhost:8081/realms/bnpl`) |
+| Secret (HS256, ≥32 bytes) | `JWT_SECRET` |
+| Issuer | `JWT_ISSUER` (default `organization-panel-service`) |
+| Expiration (seconds) | `JWT_EXPIRATION_SECONDS` (default `3600`) |
 
-Clients (e.g. `ui/organization-panel`) must obtain a token from the IdP and send:
+Clients send:
 
 ```http
 Authorization: Bearer <access_token>
@@ -43,6 +60,7 @@ Authorization: Bearer <access_token>
 
 Public (no auth):
 
+- `POST /api/auth/login`
 - `GET /api/health`
 - `GET /actuator/health`
 - `GET /actuator/info`
@@ -55,16 +73,22 @@ Authenticated sample:
 
 ```bash
 cd service/organization-panel-service
-export OAUTH2_ISSUER_URI=http://localhost:8081/realms/bnpl
+export JWT_SECRET='replace-with-a-long-random-secret-key'
 ./mvnw spring-boot:run
 ```
 
 - API: [http://localhost:8080/api/health](http://localhost:8080/api/health)
 - Actuator: [http://localhost:8080/actuator/health](http://localhost:8080/actuator/health)
+- Swagger UI: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- OpenAPI JSON: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+
+## Swagger / OpenAPI
+
+springdoc-openapi serves Swagger UI. Use **Authorize** with a Bearer token from `POST /api/auth/login`.
 
 ## Test
 
-Tests use in-memory H2 (`application-test.yml`) and a stub `JwtDecoder`.
+Tests use in-memory H2 (`application-test.yml`) and a local JWT secret.
 
 ```bash
 ./mvnw test
@@ -74,11 +98,12 @@ Tests use in-memory H2 (`application-test.yml`) and a stub `JwtDecoder`.
 
 ```
 com.organizational.bnpl.panel
-  controller/
-  service/
+  controller/      # AuthController, HealthController, MeController
+  service/         # AuthService, JwtTokenService, ...
+  security/        # PanelUserDetailsService, PanelUserPrincipal
   repository/
   domain/
   dto/
-  config/          # SecurityConfig (OAuth2 JWT), WebConfig
+  config/          # SecurityConfig, JwtConfig, OpenApiConfig, WebConfig
   exception/
 ```

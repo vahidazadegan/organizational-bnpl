@@ -22,9 +22,10 @@ Backend must use **Spring Boot 4.0.8**. Do not upgrade/downgrade the Boot versio
 - Persistence: **PostgreSQL** via Spring Data JPA (`spring-boot-starter-data-jpa` + `postgresql` driver)
 - Table naming: **plural** physical names (e.g. `organizations`) — see `.cursor/rules/db-table-naming.mdc`
 - Schema migrations: **Liquibase** (`spring-boot-starter-liquibase`, changelogs under `src/main/resources/db/changelog/`)
-- Security: **Spring Security** + **OAuth2 Resource Server** (JWT Bearer). Configure `OAUTH2_ISSUER_URI`. Keep `/api/health` and actuator health/info public; protect other APIs.
+- Security: **Spring Security** with panel login (`POST /api/auth/login` against `panel_users`) issuing HS256 JWT; resource server validates Bearer tokens. Configure `JWT_SECRET`. Keep `/api/auth/login`, `/api/health`, actuator health/info, and Swagger (`/swagger-ui/**`, `/v3/api-docs/**`) public; protect other APIs.
+- API docs: **springdoc-openapi** Swagger UI at `/swagger-ui.html`
 - Config defaults align with `docker-compose-dev` (`bnpl_db` / `bnpl`)
-- Typical pieces: Spring Web, Validation, Spring Data JPA, Liquibase, Spring Security OAuth2 Resource Server
+- Typical pieces: Spring Web, Validation, Spring Data JPA, Liquibase, Spring Security JWT login, **springdoc-openapi** (Swagger UI)
 
 ## Lombok
 

@@ -2,20 +2,44 @@
 
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import {
+  Alert,
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   FormControlLabel,
   Paper,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { loginRequest, saveSession } from "@/lib/auth/session";
 
-/**
- * Display-only login form. Submit does nothing.
- */
 export function LoginForm() {
+  const router = useRouter();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setSubmitting(true);
+
+    try {
+      const result = await loginRequest({ username, password });
+      saveSession(result);
+      router.push("/welcome");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "خطا در ورود");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <Paper
       elevation={0}
@@ -30,14 +54,7 @@ export function LoginForm() {
         boxShadow: "0 18px 50px rgba(26, 11, 46, 0.12)",
       }}
     >
-      <Stack
-        component="form"
-        spacing={2.5}
-        onSubmit={(event) => {
-          event.preventDefault();
-        }}
-        noValidate
-      >
+      <Stack component="form" spacing={2.5} onSubmit={handleSubmit} noValidate>
         <Stack alignItems="center" spacing={1} sx={{ mb: 1 }}>
           <Box
             sx={{
@@ -56,9 +73,11 @@ export function LoginForm() {
             ورود به پنل
           </Typography>
           <Typography variant="body2" color="text.secondary" textAlign="center">
-            این صفحه فقط برای نمایش است و عملی انجام نمی‌دهد.
+            با نام کاربری و رمز عبور پنل وارد شوید.
           </Typography>
         </Stack>
+
+        {error ? <Alert severity="error">{error}</Alert> : null}
 
         <TextField
           label="نام کاربری"
@@ -66,6 +85,9 @@ export function LoginForm() {
           autoComplete="username"
           fullWidth
           required
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
+          disabled={submitting}
         />
         <TextField
           label="رمز عبور"
@@ -74,13 +96,23 @@ export function LoginForm() {
           autoComplete="current-password"
           fullWidth
           required
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          disabled={submitting}
         />
         <FormControlLabel
-          control={<Checkbox name="remember" color="primary" />}
+          control={<Checkbox name="remember" color="primary" disabled={submitting} />}
           label="مرا به خاطر بسپار"
         />
-        <Button type="submit" variant="contained" size="large" fullWidth>
-          ورود
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          fullWidth
+          disabled={submitting || !username || !password}
+          startIcon={submitting ? <CircularProgress size={18} color="inherit" /> : undefined}
+        >
+          {submitting ? "در حال ورود..." : "ورود"}
         </Button>
       </Stack>
     </Paper>

@@ -8,7 +8,7 @@ alwaysApply: true
 - Repo: organizational BNPL product with UI under `ui/organization-panel` and backend under `service/organization-panel-service`.
 - Primary UI: Next.js (App Router) + TypeScript + Material 3 (MUI) in `ui/organization-panel`.
 - Primary backend: Spring Boot **4.0.8** (Java) + **PostgreSQL** in `service/organization-panel-service`.
-- Backend auth: **Spring Security OAuth2 Resource Server** (JWT); issuer via `OAUTH2_ISSUER_URI`.
+- Backend auth: panel login (`panel_users` + BCrypt) issues JWT; configure `JWT_SECRET`.
 - Backend DB tables: **plural** names (see `db-table-naming` rule).
 - Backend Java boilerplate: use **Lombok** (see `java-lombok` rule); do not hand-write getters/setters/ctors/loggers.
 - Dev database: `docker-compose-dev` (Postgres **18.6**, db `bnpl_db`).

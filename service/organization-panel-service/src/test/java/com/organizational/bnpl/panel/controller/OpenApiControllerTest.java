@@ -1,8 +1,6 @@
 package com.organizational.bnpl.panel.controller;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -15,21 +13,20 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class MeControllerTest {
+class OpenApiControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
 
 	@Test
-	void meRequiresAuthentication() throws Exception {
-		mockMvc.perform(get("/api/me"))
-				.andExpect(status().isUnauthorized());
+	void apiDocsArePublic() throws Exception {
+		mockMvc.perform(get("/v3/api-docs"))
+				.andExpect(status().isOk());
 	}
 
 	@Test
-	void meReturnsJwtSubject() throws Exception {
-		mockMvc.perform(get("/api/me").with(jwt().jwt(jwt -> jwt.subject("org-admin"))))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.subject").value("org-admin"));
+	void swaggerUiIsPublic() throws Exception {
+		mockMvc.perform(get("/swagger-ui/index.html"))
+				.andExpect(status().isOk());
 	}
 }

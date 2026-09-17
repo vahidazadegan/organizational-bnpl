@@ -10,9 +10,10 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
-  # JwtDecoder bean from TestJwtDecoderConfig replaces issuer discovery in tests.
+
+app:
   security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: https://auth.test/realms/bnpl
+    jwt:
+      secret: test-secret-key-that-is-long-enough-32b
+      issuer: organization-panel-service-test
+      expiration-seconds: 3600
