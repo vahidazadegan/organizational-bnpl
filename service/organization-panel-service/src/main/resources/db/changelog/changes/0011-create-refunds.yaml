@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0011-create-refunds
+      author: organizational-bnpl
+      comment: Create refunds table for purchase refund records
+      changes:
+        - createTable:
+            tableName: refunds
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_refunds
+                    nullable: false
+              - column:
+                  name: purchase_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: varchar(3)
+                  defaultValue: IRR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reason
+                  type: varchar(500)
+              - column:
+                  name: status
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: external_reference
+                  type: varchar(100)
+              - column:
+                  name: refunded_at
+                  type: timestamp
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: refunds
+            baseColumnNames: purchase_id
+            referencedTableName: purchases
+            referencedColumnNames: id
+            constraintName: fk_refund_purchase

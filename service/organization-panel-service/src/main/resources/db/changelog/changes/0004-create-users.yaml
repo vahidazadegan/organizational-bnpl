@@ -1,0 +1,62 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0004-create-users
+      author: organizational-bnpl
+      comment: Create users table for end-user profiles
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_users
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: mobile
+                  type: varchar(15)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: national_id
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birth_date
+                  type: date
+              - column:
+                  name: status
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: users
+            columnNames: national_id
+            constraintName: uk_users_national_id
+        - addUniqueConstraint:
+            tableName: users
+            columnNames: mobile
+            constraintName: uk_users_mobile

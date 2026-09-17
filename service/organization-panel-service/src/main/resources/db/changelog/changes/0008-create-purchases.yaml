@@ -1,0 +1,95 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0008-create-purchases
+      author: organizational-bnpl
+      comment: Create purchases table for organization BNPL purchase records
+      changes:
+        - createTable:
+            tableName: purchases
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_purchases
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_credit_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: merchant_id
+                  type: uuid
+              - column:
+                  name: shop_name
+                  type: varchar(200)
+              - column:
+                  name: description
+                  type: varchar(500)
+              - column:
+                  name: amount
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: varchar(3)
+                  defaultValue: IRR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_number
+                  type: varchar(100)
+              - column:
+                  name: external_reference
+                  type: varchar(100)
+              - column:
+                  name: purchased_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: purchases
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            constraintName: fk_purchase_user
+        - addForeignKeyConstraint:
+            baseTableName: purchases
+            baseColumnNames: organization_id
+            referencedTableName: organizations
+            referencedColumnNames: id
+            constraintName: fk_purchase_org
+        - addForeignKeyConstraint:
+            baseTableName: purchases
+            baseColumnNames: user_credit_id
+            referencedTableName: user_credits
+            referencedColumnNames: id
+            constraintName: fk_purchase_credit
