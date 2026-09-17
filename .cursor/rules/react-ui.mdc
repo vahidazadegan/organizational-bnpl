@@ -1,0 +1,22 @@
+---
+description: React UI patterns for organization-panel screens and components
+globs: ui/organization-panel/**/*.{tsx,jsx}
+alwaysApply: false
+---
+
+# React UI (Material 3)
+
+- Build screens with MUI Material 3 components; extract hooks for reusable logic.
+- Prefer controlled forms (`TextField`, `Select`, `Checkbox`, `FormControl`) with clear validation and labels.
+- List/table screens: use MUI loading/empty/error patterns (`Skeleton`, `Alert`, `EmptyState`-style layout).
+- Keep interactive elements keyboard-accessible; rely on MUI a11y defaults and fix gaps.
+- Avoid deep prop drilling; lift state or use context only for a real shared subtree.
+- Prefer MUI layout primitives (`Stack`, `Box`, `Grid2`, `Container`) over custom flex/grid CSS.
+
+```tsx
+// ✅ Prefer explicit states with MUI
+if (isLoading) return <Skeleton variant="rounded" height={120} />;
+if (error) return <Alert severity="error">{error.message}</Alert>;
+if (!items.length) return <Alert severity="info">No items yet</Alert>;
+return <ItemTable items={items} />;
+```

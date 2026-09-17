@@ -1,0 +1,30 @@
+---
+description: Next.js App Router and TypeScript conventions for the organization panel
+globs: ui/organization-panel/**/*.{ts,tsx,js,jsx}
+alwaysApply: false
+---
+
+# Next.js + TypeScript
+
+- Use App Router (`app/`). Prefer Server Components by default; add `"use client"` only when needed (state, effects, browser APIs, event handlers).
+- Colocate route UI under `app/`; shared UI under `components/`; API/clients under `lib/` or `services/`.
+- Name components in PascalCase; hooks as `useX`; utilities as camelCase.
+- Prefer named exports for reusable components/hooks; default export only for Next.js route/page files when required.
+- Fetch data on the server when possible. For client fetching, handle loading/error/empty states explicitly.
+- Do not put secrets in client code. Use `NEXT_PUBLIC_` only for safe public config.
+- Build UI with Material 3 (MUI). Style via theme tokens (`sx`, `styled`, theme palette/typography/shape); avoid ad-hoc CSS/Tailwind for core components.
+
+```tsx
+// ❌ BAD — unnecessary client boundary
+"use client";
+export default async function Page() {
+  const data = await getData();
+  return <List items={data} />;
+}
+
+// ✅ GOOD — server by default
+export default async function Page() {
+  const data = await getData();
+  return <List items={data} />;
+}
+```

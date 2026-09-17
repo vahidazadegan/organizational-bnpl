@@ -1,0 +1,26 @@
+---
+description: Material 3 (MUI) UI standards for organization-panel
+globs: ui/organization-panel/**/*.{ts,tsx,js,jsx}
+alwaysApply: false
+---
+
+# Material 3 UI
+
+- Use MUI Material 3 components (`@mui/material`, icons from `@mui/icons-material`).
+- Theme with MD3 tokens: color roles (primary, secondary, tertiary, surface, outline), typography scale, shape, elevation/shadows.
+- Prefer theme `sx` / `styled` over one-off CSS files for component styling.
+- Wrap the app with MUI `ThemeProvider` + CssBaseline (and Next.js App Router cache provider when required).
+- Prefer built-in MUI primitives: Button, TextField, Select, Dialog, Drawer, AppBar, Data Grid (if tables are needed), Snackbar/Alert.
+- Do not mix another component library. Custom components should compose MUI primitives.
+- Keep density and spacing consistent with the theme (`theme.spacing`).
+- Support light/dark via theme color schemes when the product enables them.
+
+```tsx
+// ✅ Theme-driven styling
+<Button variant="filled" color="primary" sx={{ borderRadius: 2 }}>
+  Save
+</Button>
+
+// ❌ Ad-hoc styling that bypasses the theme
+<button className="rounded bg-blue-500 px-4 py-2 text-white">Save</button>
+```

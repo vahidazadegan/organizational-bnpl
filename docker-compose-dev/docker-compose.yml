@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:18.6
+    container_name: bnpl-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: bnpl_db
+      POSTGRES_USER: bnpl
+      POSTGRES_PASSWORD: bnpl@nilva
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bnpl -d bnpl_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

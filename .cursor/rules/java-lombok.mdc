@@ -1,0 +1,51 @@
+---
+description: Require Lombok for Java boilerplate in organization-panel-service
+globs: service/organization-panel-service/**/*.java
+alwaysApply: false
+---
+
+# Lombok for boilerplate
+
+In `service/organization-panel-service`, **always use Lombok** for boilerplate instead of hand-written getters, setters, constructors, `equals`/`hashCode`, or `toString`.
+
+## Required patterns
+
+- Entities / mutable domain: `@Getter` `@Setter` `@NoArgsConstructor` (JPA needs a no-args ctor). Prefer these over `@Data` on JPA entities.
+- Prefer `@EqualsAndHashCode(onlyExplicitlyIncluded = true)` + `@EqualsAndHashCode.Include` on the id when equality is needed; do not use `@Data` / full-field `@EqualsAndHashCode` on entities.
+- DTOs / simple value carriers: prefer Java `record` when immutable fits; otherwise Lombok (`@Value`, `@Builder`, etc.).
+- Logging: use `@Slf4j` instead of manual `LoggerFactory` loggers.
+- Keep Lombok on the classpath (`org.projectlombok:lombok`, optional). Do not remove it.
+
+## Examples
+
+```java
+// ❌ BAD — hand-written accessors
+public class Organization {
+  private UUID id;
+  public UUID getId() { return id; }
+  public void setId(UUID id) { this.id = id; }
+}
+
+// ✅ GOOD
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+public class Organization {
+  private UUID id;
+}
+```
+
+```java
+// ❌ BAD on JPA entity
+@Data
+@Entity
+public class Organization { ... }
+
+// ✅ GOOD on JPA entity
+@Getter
+@Setter
+@NoArgsConstructor
+@Entity
+public class Organization { ... }
+```

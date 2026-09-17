@@ -1,0 +1,25 @@
+---
+description: Core context for the organizational-bnpl monorepo
+alwaysApply: true
+---
+
+# Organizational BNPL
+
+- Repo: organizational BNPL product with UI under `ui/organization-panel` and backend under `service/organization-panel-service`.
+- Primary UI: Next.js (App Router) + TypeScript + Material 3 (MUI) in `ui/organization-panel`.
+- Primary backend: Spring Boot **4.0.8** (Java) + **PostgreSQL** in `service/organization-panel-service`.
+- Backend auth: **Spring Security OAuth2 Resource Server** (JWT); issuer via `OAUTH2_ISSUER_URI`.
+- Backend DB tables: **plural** names (see `db-table-naming` rule).
+- Backend Java boilerplate: use **Lombok** (see `java-lombok` rule); do not hand-write getters/setters/ctors/loggers.
+- Dev database: `docker-compose-dev` (Postgres **18.6**, db `bnpl_db`).
+- Prefer TypeScript strict typing on the UI; avoid `any` unless unavoidable and justified.
+- Keep UI and API contracts explicit; do not invent backend endpoints without confirming they exist or documenting assumptions.
+- Match existing patterns in this repo when present; do not copy unrelated projects unless asked.
+- Prefer small, focused changes; no drive-by refactors.
+
+## Layout
+
+```
+ui/organization-panel/                    # Next.js + Material 3 UI
+service/organization-panel-service/       # Spring Boot 4.0.8 backend
+```

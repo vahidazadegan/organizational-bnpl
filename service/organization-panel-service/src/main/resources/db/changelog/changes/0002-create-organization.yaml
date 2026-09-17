@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0002-create-organizations
+      author: organizational-bnpl
+      comment: Create organizations table
+      changes:
+        - createTable:
+            tableName: organizations
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_organizations
+                    nullable: false
+              - column:
+                  name: code
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: national_id
+                  type: varchar(20)
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(255)
+              - column:
+                  name: phone
+                  type: varchar(30)
+        - addUniqueConstraint:
+            tableName: organizations
+            columnNames: code
+            constraintName: uk_organizations_code
+        - addUniqueConstraint:
+            tableName: organizations
+            columnNames: national_id
+            constraintName: uk_organizations_national_id
