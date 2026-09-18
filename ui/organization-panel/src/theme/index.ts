@@ -37,7 +37,7 @@ export const theme = createTheme({
           contrastText: "#1A0B2E",
         },
         background: {
-          default: "#D8D6FF",
+          default: "#FFFFFF",
           paper: "#FFFFFF",
         },
         text: {
@@ -183,9 +183,7 @@ export const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundImage:
-            "radial-gradient(1200px 600px at 10% -10%, rgba(255, 142, 154, 0.22), transparent 55%), radial-gradient(900px 500px at 100% 0%, rgba(106, 53, 255, 0.18), transparent 50%)",
-          backgroundAttachment: "fixed",
+          backgroundImage: "none",
         },
       },
     },

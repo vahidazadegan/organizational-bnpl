@@ -1,10 +1,6 @@
 import { API_BASE_URL } from "@/lib/config";
 import { getAccessToken } from "@/lib/auth/session";
-import type {
-  UserImportResponse,
-  UserSearchParams,
-  UserSearchResponse,
-} from "@/types/user";
+import type { UserSearchParams, UserSearchResponse } from "@/types/user";
 
 export class UsersApiError extends Error {
   readonly status: number;
@@ -74,42 +70,4 @@ export async function searchUsers(
   }
 
   return (await response.json()) as UserSearchResponse;
-}
-
-export async function importUsers(file: File): Promise<UserImportResponse> {
-  const token = getAccessToken();
-  if (!token) {
-    throw new UsersApiError("نشست کاربری معتبر نیست. دوباره وارد شوید.", 401);
-  }
-
-  const formData = new FormData();
-  formData.append("file", file);
-
-  const response = await fetch(`${API_BASE_URL}/api/users/import`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-  });
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      throw new UsersApiError("نشست کاربری منقضی شده است. دوباره وارد شوید.", 401);
-    }
-
-    let message = "خطا در بارگذاری فایل کاربران. دوباره تلاش کنید.";
-    try {
-      const body = (await response.json()) as { message?: string };
-      if (body.message) {
-        message = body.message;
-      }
-    } catch {
-      // keep default message
-    }
-    throw new UsersApiError(message, response.status);
-  }
-
-  return (await response.json()) as UserImportResponse;
 }

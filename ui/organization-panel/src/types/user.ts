@@ -28,15 +28,3 @@ export type UserItem = {
 };
 
 export type UserSearchResponse = PageResponse<UserItem>;
-
-export type UserImportRowError = {
-  rowNumber: number;
-  message: string;
-};
-
-export type UserImportResponse = {
-  totalRows: number;
-  imported: number;
-  skipped: number;
-  errors: UserImportRowError[];
-};

@@ -93,7 +93,7 @@ public class UserImportService {
 							user.getId(), organization.getId())) {
 						skipped++;
 						errors.add(new UserImportResponse.RowError(
-								rowNumber, "کاربر قبلاً به این سازمان assign شده است"));
+								rowNumber, "کاربر قبلا در این سازمان ثبت شده است"));
 						continue;
 					}
 

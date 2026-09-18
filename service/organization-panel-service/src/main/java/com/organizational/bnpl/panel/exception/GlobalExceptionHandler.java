@@ -22,6 +22,12 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.badRequest().body(errorBody(HttpStatus.BAD_REQUEST, ex.getMessage()));
 	}
 
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity<Map<String, Object>> handleNotFound(NotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND)
+				.body(errorBody(HttpStatus.NOT_FOUND, ex.getMessage()));
+	}
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
 		String message = ex.getBindingResult().getFieldErrors().stream()

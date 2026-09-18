@@ -9,7 +9,7 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
 import TaskAltOutlinedIcon from "@mui/icons-material/TaskAltOutlined";
-import WidgetsOutlinedIcon from "@mui/icons-material/WidgetsOutlined";
+import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import {
   Box,
   List,
@@ -59,7 +59,11 @@ const menuSections: MenuSection[] = [
     title: "سایر",
     items: [
       { label: "نمودارها", icon: InsertChartOutlinedIcon },
-      { label: "المان‌ها", icon: WidgetsOutlinedIcon },
+      {
+        label: "ورود اطلاعات",
+        icon: CloudUploadOutlinedIcon,
+        href: "/dashboard/data-entry",
+      },
     ],
   },
 ];

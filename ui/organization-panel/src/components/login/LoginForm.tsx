@@ -14,15 +14,49 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState, type AnimationEvent } from "react";
 import { loginRequest, saveSession } from "@/lib/auth/session";
 
 export function LoginForm() {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const syncAutofilledValues = useCallback(() => {
+    const form = formRef.current;
+    if (!form) {
+      return;
+    }
+
+    const usernameInput = form.elements.namedItem("username");
+    const passwordInput = form.elements.namedItem("password");
+
+    if (usernameInput instanceof HTMLInputElement && usernameInput.value) {
+      setUsername(usernameInput.value);
+    }
+    if (passwordInput instanceof HTMLInputElement && passwordInput.value) {
+      setPassword(passwordInput.value);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Chrome/Firefox may fill credentials after the first paint.
+    const timers = [0, 100, 500].map((ms) =>
+      window.setTimeout(syncAutofilledValues, ms),
+    );
+    return () => {
+      timers.forEach((id) => window.clearTimeout(id));
+    };
+  }, [syncAutofilledValues]);
+
+  function handleAutofillAnimation(event: AnimationEvent<HTMLDivElement>) {
+    if (event.animationName === "mui-auto-fill") {
+      syncAutofilledValues();
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -54,7 +88,13 @@ export function LoginForm() {
         boxShadow: "0 18px 50px rgba(26, 11, 46, 0.12)",
       }}
     >
-      <Stack component="form" spacing={2.5} onSubmit={handleSubmit} noValidate>
+      <Stack
+        component="form"
+        ref={formRef}
+        spacing={2.5}
+        onSubmit={handleSubmit}
+        noValidate
+      >
         <Stack alignItems="center" spacing={1} sx={{ mb: 1 }}>
           <Box
             sx={{
@@ -87,7 +127,11 @@ export function LoginForm() {
           required
           value={username}
           onChange={(event) => setUsername(event.target.value)}
+          onAnimationStart={handleAutofillAnimation}
           disabled={submitting}
+          slotProps={{
+            inputLabel: { shrink: true },
+          }}
         />
         <TextField
           label="رمز عبور"
@@ -98,7 +142,11 @@ export function LoginForm() {
           required
           value={password}
           onChange={(event) => setPassword(event.target.value)}
+          onAnimationStart={handleAutofillAnimation}
           disabled={submitting}
+          slotProps={{
+            inputLabel: { shrink: true },
+          }}
         />
         <FormControlLabel
           control={<Checkbox name="remember" color="primary" disabled={submitting} />}

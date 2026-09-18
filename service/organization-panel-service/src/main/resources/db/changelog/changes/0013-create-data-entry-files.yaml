@@ -1,0 +1,94 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0013-create-data-entry-files
+      author: organizational-bnpl
+      comment: Create data_entry_files table for CSV upload tracking and result download
+      changes:
+        - createTable:
+            tableName: data_entry_files
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_data_entry_files
+                    nullable: false
+              - column:
+                  name: organization_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: uploaded_by_panel_user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_type
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_rows
+                  type: int
+              - column:
+                  name: success_rows
+                  type: int
+              - column:
+                  name: failed_rows
+                  type: int
+              - column:
+                  name: result_content
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: data_entry_files
+            baseColumnNames: organization_id
+            referencedTableName: organizations
+            referencedColumnNames: id
+            constraintName: fk_data_entry_files_organization
+        - addForeignKeyConstraint:
+            baseTableName: data_entry_files
+            baseColumnNames: uploaded_by_panel_user_id
+            referencedTableName: panel_users
+            referencedColumnNames: id
+            constraintName: fk_data_entry_files_panel_user
+        - createIndex:
+            tableName: data_entry_files
+            indexName: idx_data_entry_files_org_created
+            columns:
+              - column:
+                  name: organization_id
+              - column:
+                  name: created_at
+                  descending: true
+        - createIndex:
+            tableName: data_entry_files
+            indexName: idx_data_entry_files_org_type_status
+            columns:
+              - column:
+                  name: organization_id
+              - column:
+                  name: file_type
+              - column:
+                  name: status

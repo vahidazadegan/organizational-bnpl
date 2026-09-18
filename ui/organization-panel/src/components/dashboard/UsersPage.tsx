@@ -1,16 +1,11 @@
 "use client";
 
-import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import {
   Alert,
   Box,
   Button,
   Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   FormControl,
   InputLabel,
   MenuItem,
@@ -28,10 +23,10 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useState } from "react";
 import { clearSession } from "@/lib/auth/session";
-import { importUsers, searchUsers, UsersApiError } from "@/lib/users/api";
-import type { UserImportResponse, UserItem, UserStatus } from "@/types/user";
+import { searchUsers, UsersApiError } from "@/lib/users/api";
+import type { UserItem, UserStatus } from "@/types/user";
 
 type UserFilters = {
   name: string;
@@ -67,7 +62,6 @@ function formatBirthDate(value: string | null): string {
 
 export function UsersPage() {
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [draft, setDraft] = useState<UserFilters>(EMPTY_FILTERS);
   const [applied, setApplied] = useState<UserFilters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
@@ -76,12 +70,6 @@ export function UsersPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [reloadToken, setReloadToken] = useState(0);
-  const [importOpen, setImportOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [importing, setImporting] = useState(false);
-  const [importError, setImportError] = useState<string | null>(null);
-  const [importResult, setImportResult] = useState<UserImportResponse | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -128,7 +116,7 @@ export function UsersPage() {
     return () => {
       cancelled = true;
     };
-  }, [applied, page, reloadToken, router]);
+  }, [applied, page, router]);
 
   function applyFilters() {
     setApplied({ ...draft });
@@ -139,55 +127,6 @@ export function UsersPage() {
     setDraft(EMPTY_FILTERS);
     setApplied(EMPTY_FILTERS);
     setPage(1);
-  }
-
-  function openImportDialog() {
-    setSelectedFile(null);
-    setImportError(null);
-    setImportResult(null);
-    setImportOpen(true);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  }
-
-  function closeImportDialog() {
-    if (importing) {
-      return;
-    }
-    setImportOpen(false);
-  }
-
-  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0] ?? null;
-    setSelectedFile(file);
-    setImportError(null);
-    setImportResult(null);
-  }
-
-  async function submitImport() {
-    if (!selectedFile) {
-      setImportError("لطفاً یک فایل CSV انتخاب کنید.");
-      return;
-    }
-
-    setImporting(true);
-    setImportError(null);
-    setImportResult(null);
-    try {
-      const result = await importUsers(selectedFile);
-      setImportResult(result);
-      setReloadToken((value) => value + 1);
-    } catch (err) {
-      if (err instanceof UsersApiError && err.status === 401) {
-        clearSession();
-        router.replace("/login");
-        return;
-      }
-      setImportError(err instanceof Error ? err.message : "خطای ناشناخته رخ داد.");
-    } finally {
-      setImporting(false);
-    }
   }
 
   const currentPage = Math.min(page, totalPages);
@@ -275,34 +214,23 @@ export function UsersPage() {
           </FormControl>
         </Box>
         <Stack
-          direction={{ xs: "column", sm: "row" }}
+          direction="row"
           spacing={1.5}
           sx={{ mt: 2 }}
-          justifyContent="space-between"
-          alignItems={{ xs: "stretch", sm: "center" }}
+          justifyContent="flex-end"
         >
-          <Button
-            variant="outlined"
-            startIcon={<CloudUploadOutlinedIcon />}
-            onClick={openImportDialog}
-            disabled={loading}
-          >
-            بارگذاری فایل
+          <Button variant="outlined" color="inherit" onClick={resetFilters} disabled={loading}>
+            پاک کردن جست‌وجو
           </Button>
-          <Stack direction="row" spacing={1.5} justifyContent="flex-end">
-            <Button variant="outlined" color="inherit" onClick={resetFilters} disabled={loading}>
-              پاک کردن جست‌وجو
-            </Button>
-            <Button
-              variant="contained"
-              startIcon={<SearchOutlinedIcon />}
-              onClick={applyFilters}
-              disabled={loading}
-              sx={{ bgcolor: "#3C50E0", "&:hover": { bgcolor: "#2E3FB8" } }}
-            >
-              جست‌وجو
-            </Button>
-          </Stack>
+          <Button
+            variant="contained"
+            startIcon={<SearchOutlinedIcon />}
+            onClick={applyFilters}
+            disabled={loading}
+            sx={{ bgcolor: "#3C50E0", "&:hover": { bgcolor: "#2E3FB8" } }}
+          >
+            جست‌وجو
+          </Button>
         </Stack>
       </Box>
 
@@ -421,83 +349,6 @@ export function UsersPage() {
           />
         </Stack>
       </Box>
-
-      <Dialog open={importOpen} onClose={closeImportDialog} fullWidth maxWidth="sm">
-        <DialogTitle>بارگذاری فایل کاربران</DialogTitle>
-        <DialogContent>
-          <Stack spacing={2} sx={{ pt: 1 }}>
-            <Typography variant="body2" color="text.secondary">
-              فایل CSV با ستون‌های first_name، last_name، mobile، national_id را انتخاب کنید.
-              ستون‌های birth_date و status اختیاری‌اند.
-            </Typography>
-            <Button
-              variant="outlined"
-              component="label"
-              startIcon={<CloudUploadOutlinedIcon />}
-              disabled={importing}
-              sx={{ alignSelf: "flex-start", borderRadius: 1 }}
-            >
-              انتخاب فایل
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".csv,text/csv"
-                hidden
-                onChange={handleFileChange}
-              />
-            </Button>
-            <Typography variant="body2" color={selectedFile ? "text.primary" : "text.secondary"}>
-              {selectedFile ? selectedFile.name : "فایلی انتخاب نشده است."}
-            </Typography>
-            {importError ? <Alert severity="error">{importError}</Alert> : null}
-            {importResult ? (
-              <Alert severity={importResult.errors.length > 0 ? "warning" : "success"}>
-                از {toPersianDigits(importResult.totalRows)} ردیف،{" "}
-                {toPersianDigits(importResult.imported)} وارد شد و{" "}
-                {toPersianDigits(importResult.skipped)} رد شد.
-                {importResult.errors.length > 0
-                  ? ` (${toPersianDigits(importResult.errors.length)} خطا)`
-                  : ""}
-              </Alert>
-            ) : null}
-            {importResult && importResult.errors.length > 0 ? (
-              <Box
-                sx={{
-                  maxHeight: 160,
-                  overflow: "auto",
-                  border: "1px solid",
-                  borderColor: "divider",
-                  borderRadius: 1,
-                  p: 1.5,
-                }}
-              >
-                <Stack spacing={0.75}>
-                  {importResult.errors.slice(0, 10).map((rowError) => (
-                    <Typography key={`${rowError.rowNumber}-${rowError.message}`} variant="caption">
-                      ردیف {toPersianDigits(rowError.rowNumber)}: {rowError.message}
-                    </Typography>
-                  ))}
-                </Stack>
-              </Box>
-            ) : null}
-          </Stack>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={closeImportDialog} disabled={importing} color="inherit">
-            {importResult ? "بستن" : "انصراف"}
-          </Button>
-          {!importResult ? (
-            <Button
-              variant="contained"
-              onClick={() => void submitImport()}
-              disabled={importing || !selectedFile}
-              sx={{ bgcolor: "#3C50E0", "&:hover": { bgcolor: "#2E3FB8" } }}
-            >
-              {importing ? "در حال بارگذاری…" : "بارگذاری"}
-            </Button>
-          ) : null}
-        </DialogActions>
-      </Dialog>
     </Stack>
   );
 }
