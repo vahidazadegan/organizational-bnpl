@@ -1,0 +1,51 @@
+---
+description: Require MapStruct for entity↔DTO mapping in organization-panel-service
+globs: service/organization-panel-service/**/*.{java,xml}
+alwaysApply: false
+---
+
+# MapStruct for entity ↔ DTO
+
+In `service/organization-panel-service`, **use MapStruct** for converting between JPA entities and DTOs. Do not hand-write field-by-field mapping methods in services or controllers.
+
+## Required patterns
+
+- Put mappers under `.../mapper/` (e.g. `UserMapper`).
+- Define interfaces with `@Mapper(componentModel = "spring")` and inject them via constructor (`@RequiredArgsConstructor`).
+- Prefer `toDto` / `toEntity` (or `toResponse` / `toRequest`) naming consistent with existing mappers.
+- Keep MapStruct on the classpath (`org.mapstruct:mapstruct`) and configure the annotation processor alongside Lombok in `pom.xml` (`lombok-mapstruct-binding` when both are used).
+- Use `@Mapping` only when names differ or a field needs a custom expression; avoid unnecessary annotations.
+- For lists/pages, map via the mapper (`mapper.toDto(entity)`, `page.map(mapper::toDto)`), not manual loops that copy fields.
+
+## Examples
+
+```java
+// ❌ BAD — hand-written mapping in the service
+private UserResponse toResponse(User user) {
+  return new UserResponse(
+      user.getId(),
+      user.getFirstName(),
+      user.getLastName(),
+      user.getMobile(),
+      user.getNationalId(),
+      user.getBirthDate(),
+      user.getStatus());
+}
+```
+
+```java
+// ✅ GOOD — MapStruct mapper
+@Mapper(componentModel = "spring")
+public interface UserMapper {
+  UserResponse toResponse(User user);
+}
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+  private final UserMapper userMapper;
+
+  // ...
+  return PageResponse.map(result, pageNumber, userMapper::toResponse);
+}
+```

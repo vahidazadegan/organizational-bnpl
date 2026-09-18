@@ -19,6 +19,7 @@ Backend must use **Spring Boot 4.0.8**. Do not upgrade/downgrade the Boot versio
 - Spring Boot **4.0.8**
 - Java (follow the module’s configured language version)
 - **Lombok** for boilerplate (getters/setters/ctors/loggers) — see `.cursor/rules/java-lombok.mdc`
+- **MapStruct** for entity ↔ DTO mapping — see `.cursor/rules/java-mapstruct.mdc`
 - Persistence: **PostgreSQL** via Spring Data JPA (`spring-boot-starter-data-jpa` + `postgresql` driver)
 - Table naming: **plural** physical names (e.g. `organizations`) — see `.cursor/rules/db-table-naming.mdc`
 - Schema migrations: **Liquibase** (`spring-boot-starter-liquibase`, changelogs under `src/main/resources/db/changelog/`)
@@ -72,6 +73,7 @@ service/organization-panel-service/
     repository/
     domain/   (or entity/)
     dto/
+    mapper/   (MapStruct: entity ↔ DTO)
     config/
   src/main/resources/
     application.yml

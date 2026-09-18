@@ -12,6 +12,7 @@ alwaysApply: false
 - Keep REST APIs explicit: request/response DTOs, validation (`@Valid`), meaningful HTTP status codes.
 - Do **not** put `/api` on controller `@RequestMapping` / `@*Mapping`. A global path prefix `/api` is applied in `WebConfig` for the `controller` package. Controllers use resource paths only (e.g. `/auth`, `/health`, `/organizations`).
 - Do not expose JPA/entities directly from controllers when DTOs exist or are the project pattern.
+- Map entities to DTOs with **MapStruct** (see `java-mapstruct` rule), not hand-written mappers in services.
 - Centralize error handling (e.g. `@ControllerAdvice`) instead of ad-hoc try/catch in every endpoint.
 - Configuration via `application.yml` / profiles; never commit secrets.
 - Prefer Spring Data / Spring Web patterns already present in the module; do not add a second web stack.

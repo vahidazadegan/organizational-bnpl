@@ -38,7 +38,7 @@ export const theme = createTheme({
         },
         background: {
           default: "#D8D6FF",
-          paper: "#EEEEFF",
+          paper: "#FFFFFF",
         },
         text: {
           primary: "#1A0B2E",
@@ -114,12 +114,56 @@ export const theme = createTheme({
     },
     MuiPaper: {
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           backgroundImage: "none",
-        },
+          ...(theme.palette.mode === "light"
+            ? { backgroundColor: "#FFFFFF" }
+            : {}),
+        }),
         rounded: {
           borderRadius: 24,
         },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        paper: ({ theme }) =>
+          theme.palette.mode === "light"
+            ? {
+                backgroundColor: "#FFFFFF",
+                backgroundImage: "none",
+              }
+            : {},
+      },
+    },
+    MuiDialogTitle: {
+      styleOverrides: {
+        root: ({ theme }) =>
+          theme.palette.mode === "light" ? { backgroundColor: "#FFFFFF" } : {},
+      },
+    },
+    MuiDialogContent: {
+      styleOverrides: {
+        root: ({ theme }) =>
+          theme.palette.mode === "light" ? { backgroundColor: "#FFFFFF" } : {},
+      },
+    },
+    MuiDialogActions: {
+      styleOverrides: {
+        root: ({ theme }) =>
+          theme.palette.mode === "light" ? { backgroundColor: "#FFFFFF" } : {},
+      },
+    },
+    MuiMenu: {
+      styleOverrides: {
+        paper: ({ theme }) =>
+          theme.palette.mode === "light" ? { backgroundColor: "#FFFFFF" } : {},
+      },
+    },
+    MuiPopover: {
+      styleOverrides: {
+        paper: ({ theme }) =>
+          theme.palette.mode === "light" ? { backgroundColor: "#FFFFFF" } : {},
       },
     },
     MuiOutlinedInput: {

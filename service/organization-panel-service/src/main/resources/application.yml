@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: organization-panel-service
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:bnpl_db}
     username: ${DB_USER:bnpl}

@@ -32,7 +32,7 @@ export function LoginForm() {
     try {
       const result = await loginRequest({ username, password });
       saveSession(result);
-      router.push("/welcome");
+      router.push("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "خطا در ورود");
     } finally {

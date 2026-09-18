@@ -11,6 +11,7 @@ alwaysApply: true
 - Backend auth: panel login (`panel_users` + BCrypt) issues JWT; configure `JWT_SECRET`.
 - Backend DB tables: **plural** names (see `db-table-naming` rule).
 - Backend Java boilerplate: use **Lombok** (see `java-lombok` rule); do not hand-write getters/setters/ctors/loggers.
+- Backend entity ↔ DTO mapping: use **MapStruct** (see `java-mapstruct` rule); do not hand-write field copying in services.
 - Dev database: `docker-compose-dev` (Postgres **18.6**, db `bnpl_db`).
 - Prefer TypeScript strict typing on the UI; avoid `any` unless unavoidable and justified.
 - Keep UI and API contracts explicit; do not invent backend endpoints without confirming they exist or documenting assumptions.

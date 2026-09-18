@@ -2,6 +2,7 @@ package com.organizational.bnpl.panel.service;
 
 import com.organizational.bnpl.panel.config.JwtProperties;
 import com.organizational.bnpl.panel.security.PanelUserPrincipal;
+import com.organizational.bnpl.panel.util.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
@@ -28,10 +29,10 @@ public class JwtTokenService {
 				.issuedAt(now)
 				.expiresAt(expiresAt)
 				.subject(principal.getUsername())
-				.claim("user_id", principal.getId().toString())
-				.claim("organization_id", principal.getOrganizationId().toString())
-				.claim("first_name", principal.getFirstName())
-				.claim("last_name", principal.getLastName())
+				.claim(JwtUtils.CLAIM_USER_ID, principal.getId().toString())
+				.claim(JwtUtils.CLAIM_ORGANIZATION_ID, principal.getOrganizationId().toString())
+				.claim(JwtUtils.CLAIM_FIRST_NAME, principal.getFirstName())
+				.claim(JwtUtils.CLAIM_LAST_NAME, principal.getLastName())
 				.build();
 
 		JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
