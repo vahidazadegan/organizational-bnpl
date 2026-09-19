@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0014-add-annual-interest-rate-to-user-credits
+      author: organizational-bnpl
+      comment: Add annual loan interest rate percent on user_credits
+      changes:
+        - addColumn:
+            tableName: user_credits
+            columns:
+              - column:
+                  name: annual_interest_rate
+                  type: numeric(7,4)
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

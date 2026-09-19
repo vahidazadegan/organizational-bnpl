@@ -47,6 +47,7 @@ public class DataEntryService {
 	private final OrganizationRepository organizationRepository;
 	private final PanelUserRepository panelUserRepository;
 	private final DataEntryUserImportProcessor dataEntryUserImportProcessor;
+	private final DataEntryCreditAllocationProcessor dataEntryCreditAllocationProcessor;
 	private final DataEntryFileMapper dataEntryFileMapper;
 
 	@Transactional(readOnly = true)
@@ -86,8 +87,9 @@ public class DataEntryService {
 			UUID panelUserId) {
 		validateUploadFile(file);
 		DataEntryFileType type = parseFileType(fileType, true);
-		if (type != DataEntryFileType.USERS) {
-			throw new BadRequestException("در فاز فعلی فقط نوع USERS پشتیبانی می‌شود");
+		if (type != DataEntryFileType.USERS && type != DataEntryFileType.CREDIT_ALLOCATION) {
+			throw new BadRequestException(
+					"نوع فایل پشتیبانی نمی‌شود؛ مقادیر مجاز: USERS، CREDIT_ALLOCATION");
 		}
 
 		Organization organization = organizationRepository.findById(organizationId)
@@ -108,8 +110,7 @@ public class DataEntryService {
 		entry = dataEntryFileRepository.save(entry);
 
 		try {
-			UserImportResponse importResult =
-					dataEntryUserImportProcessor.processUsersCsv(file, organizationId);
+			UserImportResponse importResult = processByType(type, file, organizationId);
 			entry.setTotalRows(importResult.totalRows());
 			entry.setSuccessRows(importResult.imported());
 			entry.setFailedRows(importResult.skipped());
@@ -133,6 +134,17 @@ public class DataEntryService {
 
 		entry = dataEntryFileRepository.save(entry);
 		return dataEntryFileMapper.toUploadResponse(entry);
+	}
+
+	private UserImportResponse processByType(
+			DataEntryFileType type,
+			MultipartFile file,
+			UUID organizationId) {
+		return switch (type) {
+			case USERS -> dataEntryUserImportProcessor.processUsersCsv(file, organizationId);
+			case CREDIT_ALLOCATION -> dataEntryCreditAllocationProcessor
+					.processCreditAllocationCsv(file, organizationId);
+		};
 	}
 
 	@Transactional(readOnly = true)
@@ -239,7 +251,8 @@ public class DataEntryService {
 		try {
 			return DataEntryFileType.valueOf(value.trim().toUpperCase(Locale.ROOT));
 		} catch (IllegalArgumentException ex) {
-			throw new BadRequestException("نوع فایل نامعتبر است؛ مقدار مجاز در فاز فعلی: USERS");
+			throw new BadRequestException(
+					"نوع فایل نامعتبر است؛ مقادیر مجاز: USERS، CREDIT_ALLOCATION");
 		}
 	}
 

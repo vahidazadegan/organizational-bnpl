@@ -28,3 +28,19 @@ export type UserItem = {
 };
 
 export type UserSearchResponse = PageResponse<UserItem>;
+
+export type UserCreditItem = {
+  id: string;
+  userId: string;
+  organizationId: string;
+  creditLimit: number;
+  usedCredit: number;
+  annualInterestRate: number;
+  repaymentMonths: number;
+  currency: string;
+  status: string;
+  validFrom: string | null;
+  validUntil: string | null;
+  createdAt: string;
+  updatedAt: string;
+};

@@ -10,6 +10,111 @@ import type {
 
 export const FILE_TYPE_LABEL: Record<DataEntryFileType, string> = {
   USERS: "کاربران",
+  CREDIT_ALLOCATION: "تخصیص اعتبار",
+};
+
+export type DataEntryColumnSpec = {
+  name: string;
+  dataType: string;
+  required: boolean;
+  description: string;
+};
+
+export const FILE_TYPE_COLUMNS: Record<DataEntryFileType, DataEntryColumnSpec[]> = {
+  USERS: [
+    {
+      name: "first_name",
+      dataType: "متن",
+      required: true,
+      description: "نام",
+    },
+    {
+      name: "last_name",
+      dataType: "متن",
+      required: true,
+      description: "نام خانوادگی",
+    },
+    {
+      name: "mobile",
+      dataType: "متن عددی",
+      required: true,
+      description: "شماره موبایل",
+    },
+    {
+      name: "national_id",
+      dataType: "متن عددی",
+      required: true,
+      description: "کد ملی",
+    },
+    {
+      name: "birth_date",
+      dataType: "تاریخ شمسی (yyyyMMdd)",
+      required: false,
+      description: "تاریخ تولد",
+    },
+    {
+      name: "status",
+      dataType: "متن (ACTIVE|INACTIVE)",
+      required: false,
+      description: "وضعیت؛ پیش‌فرض ACTIVE",
+    },
+  ],
+  CREDIT_ALLOCATION: [
+    {
+      name: "national_id",
+      dataType: "متن عددی",
+      required: true,
+      description: "کد ملی کاربر",
+    },
+    {
+      name: "credit_limit",
+      dataType: "عدد صحیح (ریال)",
+      required: true,
+      description: "سقف اعتبار",
+    },
+    {
+      name: "annual_interest_rate",
+      dataType: "عدد اعشاری",
+      required: true,
+      description: "نرخ سود سالانه (مثلاً 23.5000)",
+    },
+    {
+      name: "repayment_months",
+      dataType: "عدد صحیح",
+      required: true,
+      description: "تعداد ماه بازپرداخت",
+    },
+    {
+      name: "allocation_token",
+      dataType: "متن (حداکثر ۵۰۰۰)",
+      required: true,
+      description: "توکن/امضای تخصیص",
+    },
+    {
+      name: "valid_from",
+      dataType: "تاریخ شمسی (yyyyMMdd)",
+      required: false,
+      description: "شروع اعتبار",
+    },
+    {
+      name: "valid_until",
+      dataType: "تاریخ شمسی (yyyyMMdd)",
+      required: false,
+      description: "پایان اعتبار",
+    },
+    {
+      name: "status",
+      dataType: "متن (ACTIVE|INACTIVE)",
+      required: false,
+      description: "وضعیت؛ پیش‌فرض ACTIVE",
+    },
+    {
+      name: "currency",
+      dataType: "متن (مثلاً IRR)",
+      required: false,
+      description: "واحد پول؛ پیش‌فرض IRR",
+    },
+  ],
 };
 
 export const STATUS_LABEL: Record<DataEntryFileStatus, string> = {

@@ -14,4 +14,8 @@ public interface UserCreditRepository extends JpaRepository<UserCredit, UUID> {
 	List<UserCredit> findByOrganizationId(UUID organizationId);
 
 	Optional<UserCredit> findByUserIdAndOrganizationId(UUID userId, UUID organizationId);
+
+	List<UserCredit> findByUserIdAndOrganizationIdOrderByCreatedAtDesc(
+			UUID userId,
+			UUID organizationId);
 }

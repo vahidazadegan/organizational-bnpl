@@ -1,6 +1,10 @@
 import { API_BASE_URL } from "@/lib/config";
 import { getAccessToken } from "@/lib/auth/session";
-import type { UserSearchParams, UserSearchResponse } from "@/types/user";
+import type {
+  UserCreditItem,
+  UserSearchParams,
+  UserSearchResponse,
+} from "@/types/user";
 
 export class UsersApiError extends Error {
   readonly status: number;
@@ -12,13 +16,33 @@ export class UsersApiError extends Error {
   }
 }
 
-export async function searchUsers(
-  params: UserSearchParams,
-): Promise<UserSearchResponse> {
+async function readErrorMessage(
+  response: Response,
+  fallback: string,
+): Promise<string> {
+  try {
+    const body = (await response.json()) as { message?: string };
+    if (body.message) {
+      return body.message;
+    }
+  } catch {
+    // keep fallback
+  }
+  return fallback;
+}
+
+function requireToken(): string {
   const token = getAccessToken();
   if (!token) {
     throw new UsersApiError("نشست کاربری معتبر نیست. دوباره وارد شوید.", 401);
   }
+  return token;
+}
+
+export async function searchUsers(
+  params: UserSearchParams,
+): Promise<UserSearchResponse> {
+  const token = requireToken();
 
   const query = new URLSearchParams();
   if (params.name?.trim()) {
@@ -56,18 +80,35 @@ export async function searchUsers(
     if (response.status === 401) {
       throw new UsersApiError("نشست کاربری منقضی شده است. دوباره وارد شوید.", 401);
     }
-
-    let message = "خطا در دریافت فهرست کاربران. دوباره تلاش کنید.";
-    try {
-      const body = (await response.json()) as { message?: string };
-      if (body.message) {
-        message = body.message;
-      }
-    } catch {
-      // keep default message
-    }
-    throw new UsersApiError(message, response.status);
+    throw new UsersApiError(
+      await readErrorMessage(response, "خطا در دریافت فهرست کاربران. دوباره تلاش کنید."),
+      response.status,
+    );
   }
 
   return (await response.json()) as UserSearchResponse;
+}
+
+export async function fetchUserCredits(userId: string): Promise<UserCreditItem[]> {
+  const token = requireToken();
+
+  const response = await fetch(`${API_BASE_URL}/api/users/${userId}/credits`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new UsersApiError("نشست کاربری منقضی شده است. دوباره وارد شوید.", 401);
+    }
+    throw new UsersApiError(
+      await readErrorMessage(response, "خطا در دریافت اعتبارات کاربر. دوباره تلاش کنید."),
+      response.status,
+    );
+  }
+
+  return (await response.json()) as UserCreditItem[];
 }

@@ -25,10 +25,10 @@ export const theme = createTheme({
           contrastText: "#1A0B2E",
         },
         success: {
-          main: "#D9FF7A",
-          light: "#E8FFA8",
-          dark: "#B8E04A",
-          contrastText: "#1A0B2E",
+          main: "#3DBF6E",
+          light: "#7AD99E",
+          dark: "#2A9A55",
+          contrastText: "#FFFFFF",
         },
         info: {
           main: "#A2C2FF",
@@ -63,10 +63,10 @@ export const theme = createTheme({
           contrastText: "#1A0B2E",
         },
         success: {
-          main: "#D9FF7A",
-          light: "#E8FFA8",
-          dark: "#B8E04A",
-          contrastText: "#1A0B2E",
+          main: "#5FD98A",
+          light: "#8FE8AE",
+          dark: "#3DBF6E",
+          contrastText: "#0A2E18",
         },
         info: {
           main: "#A2C2FF",
@@ -90,13 +90,37 @@ export const theme = createTheme({
     borderRadius: 20,
   },
   typography: {
-    fontFamily: "var(--font-vazirmatn), Vazirmatn, Helvetica, Arial, sans-serif",
+    fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif",
+    h1: { fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif" },
+    h2: { fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif" },
+    h3: { fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif" },
+    h4: { fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif" },
+    h5: { fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif" },
+    h6: { fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif" },
+    subtitle1: { fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif" },
+    subtitle2: { fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif" },
+    body1: { fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif" },
+    body2: { fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif" },
     button: {
+      fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif",
       textTransform: "none",
       fontWeight: 600,
     },
+    caption: { fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif" },
+    overline: { fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif" },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        html: {
+          fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif",
+        },
+        body: {
+          fontFamily: "var(--font-vazirmatn), Vazirmatn, sans-serif",
+          backgroundImage: "none",
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -177,13 +201,6 @@ export const theme = createTheme({
         }),
         notchedOutline: {
           borderColor: "rgba(106, 53, 255, 0.25)",
-        },
-      },
-    },
-    MuiCssBaseline: {
-      styleOverrides: {
-        body: {
-          backgroundImage: "none",
         },
       },
     },

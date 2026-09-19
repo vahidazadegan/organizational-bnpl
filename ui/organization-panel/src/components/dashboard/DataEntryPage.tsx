@@ -36,6 +36,7 @@ import { clearSession } from "@/lib/auth/session";
 import {
   DataEntryApiError,
   downloadDataEntryResult,
+  FILE_TYPE_COLUMNS,
   FILE_TYPE_LABEL,
   searchDataEntryFiles,
   STATUS_LABEL,
@@ -61,7 +62,7 @@ const EMPTY_FILTERS: DataEntryFilters = {
   status: "",
 };
 
-const FILE_TYPES: DataEntryFileType[] = ["USERS"];
+const FILE_TYPES: DataEntryFileType[] = ["USERS", "CREDIT_ALLOCATION"];
 
 const STATUSES: DataEntryFileStatus[] = [
   "PENDING",
@@ -283,11 +284,16 @@ export function DataEntryPage() {
           ورود اطلاعات
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-          آپلود CSV کاربران، پیگیری پردازش و دانلود نتیجه.
+          آپلود CSV کاربران و تخصیص اعتبار، پیگیری پردازش و دانلود نتیجه.
         </Typography>
       </Box>
 
       <Box
+        component="form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          applyFilters();
+        }}
         sx={{
           bgcolor: "common.white",
           borderRadius: 1,
@@ -374,6 +380,7 @@ export function DataEntryPage() {
           alignItems={{ xs: "stretch", sm: "center" }}
         >
           <Button
+            type="button"
             variant="outlined"
             startIcon={<CloudUploadOutlinedIcon />}
             onClick={openUploadDialog}
@@ -382,15 +389,26 @@ export function DataEntryPage() {
             بارگذاری فایل
           </Button>
           <Stack direction="row" spacing={1.5} justifyContent="flex-end">
-            <Button variant="outlined" color="inherit" onClick={resetFilters} disabled={loading}>
+            <Button
+              type="button"
+              variant="outlined"
+              color="inherit"
+              onClick={resetFilters}
+              disabled={loading}
+            >
               پاک کردن فیلتر
             </Button>
             <Button
+              type="submit"
               variant="contained"
               startIcon={<SearchOutlinedIcon />}
-              onClick={applyFilters}
               disabled={loading}
-              sx={{ bgcolor: "#3C50E0", "&:hover": { bgcolor: "#2E3FB8" } }}
+              sx={{
+                bgcolor: "#3C50E0",
+                color: "common.white",
+                backgroundImage: "none",
+                "&:hover": { bgcolor: "#2E3FB8", backgroundImage: "none" },
+              }}
             >
               جست‌وجو
             </Button>
@@ -471,7 +489,9 @@ export function DataEntryPage() {
                 {files.map((item) => (
                   <TableRow key={item.id} hover>
                     <TableCell>{item.fileName}</TableCell>
-                    <TableCell>{FILE_TYPE_LABEL[item.fileType]}</TableCell>
+                    <TableCell>
+                      {FILE_TYPE_LABEL[item.fileType] ?? item.fileType}
+                    </TableCell>
                     <TableCell>
                       <Chip
                         size="small"
@@ -550,13 +570,13 @@ export function DataEntryPage() {
         </Stack>
       </Box>
 
-      <Dialog open={uploadOpen} onClose={closeUploadDialog} fullWidth maxWidth="sm">
+      <Dialog open={uploadOpen} onClose={closeUploadDialog} fullWidth maxWidth="md">
         <DialogTitle>بارگذاری فایل CSV</DialogTitle>
         <DialogContent>
           <Stack spacing={2} sx={{ pt: 1 }}>
             <Typography variant="body2" color="text.secondary">
-              فایل CSV کاربران را بارگذاری کنید. ستون‌های الزامی: first_name، last_name،
-              mobile، national_id. پس از پردازش، فایل نتیجه از فهرست قابل دانلود است.
+              نوع فایل را انتخاب کنید و CSV مربوط را بارگذاری کنید. پس از پردازش، فایل
+              نتیجه از فهرست قابل دانلود است.
             </Typography>
             <FormControl size="small" fullWidth>
               <InputLabel id="data-entry-upload-type-label">نوع فایل</InputLabel>
@@ -574,6 +594,54 @@ export function DataEntryPage() {
                 ))}
               </Select>
             </FormControl>
+            <Box
+              sx={{
+                border: "1px solid",
+                borderColor: "divider",
+                borderRadius: 1,
+                overflow: "hidden",
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                fontWeight={700}
+                sx={{ px: 2, py: 1.25, bgcolor: "#F8FAFC", borderBottom: "1px solid", borderColor: "divider" }}
+              >
+                ساختار ستون‌های CSV
+              </Typography>
+              <TableContainer sx={{ maxHeight: 280 }}>
+                <Table size="small" stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 700 }}>ستون</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>نوع داده</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>الزامی</TableCell>
+                      <TableCell sx={{ fontWeight: 700 }}>توضیح</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {FILE_TYPE_COLUMNS[uploadType].map((column) => (
+                      <TableRow key={column.name} hover>
+                        <TableCell sx={{ fontFamily: "monospace", whiteSpace: "nowrap" }}>
+                          {column.name}
+                        </TableCell>
+                        <TableCell>{column.dataType}</TableCell>
+                        <TableCell>
+                          <Chip
+                            size="small"
+                            label={column.required ? "بله" : "خیر"}
+                            color={column.required ? "warning" : "default"}
+                            variant="outlined"
+                            sx={{ fontWeight: 600 }}
+                          />
+                        </TableCell>
+                        <TableCell>{column.description}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
             <Button
               variant="outlined"
               component="label"
@@ -606,7 +674,12 @@ export function DataEntryPage() {
               variant="contained"
               onClick={() => void submitUpload()}
               disabled={uploading || !selectedFile}
-              sx={{ bgcolor: "#3C50E0", "&:hover": { bgcolor: "#2E3FB8" } }}
+              sx={{
+                bgcolor: "#3C50E0",
+                color: "common.white",
+                backgroundImage: "none",
+                "&:hover": { bgcolor: "#2E3FB8", backgroundImage: "none" },
+              }}
             >
               {uploading ? "در حال بارگذاری…" : "بارگذاری"}
             </Button>

@@ -6,8 +6,8 @@ export type PageResponse<T> = {
   totalPages: number;
 };
 
-/** Phase 1: only USERS is supported by the backend. */
-export type DataEntryFileType = "USERS";
+/** Supported by the backend data-entry upload API. */
+export type DataEntryFileType = "USERS" | "CREDIT_ALLOCATION";
 
 export type DataEntryFileStatus =
   | "PENDING"

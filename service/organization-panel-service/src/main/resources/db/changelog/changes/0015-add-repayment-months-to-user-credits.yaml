@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0015-add-repayment-months-to-user-credits
+      author: organizational-bnpl
+      comment: Add repayment months (loan tenor) on user_credits
+      changes:
+        - addColumn:
+            tableName: user_credits
+            columns:
+              - column:
+                  name: repayment_months
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

@@ -39,13 +39,13 @@ public class DataEntryController {
 			summary = "فهرست صفحه‌بندی‌شده فایل‌های ورود اطلاعات",
 			description = """
 					فایل‌های متعلق به سازمان توکن را برمی‌گرداند.
-					فیلترهای اختیاری: fileName، fileType (فاز ۱: USERS)، status.
+					فیلترهای اختیاری: fileName، fileType (USERS|CREDIT_ALLOCATION)، status.
 					صفحه‌بندی: page از ۱ (پیش‌فرض ۱)، size پیش‌فرض ۸ و حداکثر ۱۰۰.
 					""")
 	public PageResponse<DataEntryFileResponse> search(
 			@Parameter(description = "نام فایل (جست‌وجوی جزئی)")
 			@RequestParam(required = false) String fileName,
-			@Parameter(description = "نوع فایل؛ فاز فعلی: USERS")
+			@Parameter(description = "نوع فایل: USERS یا CREDIT_ALLOCATION")
 			@RequestParam(required = false) String fileType,
 			@Parameter(description = "وضعیت: PENDING|PROCESSING|COMPLETED|FAILED")
 			@RequestParam(required = false) String status,
@@ -67,10 +67,12 @@ public class DataEntryController {
 	@Operation(
 			summary = "بارگذاری فایل CSV ورود اطلاعات",
 			description = """
-					فاز فعلی فقط fileType=USERS را پردازش می‌کند (همان قرارداد CSV کاربران).
+					fileTypeهای پشتیبانی‌شده:
+					- USERS: first_name, last_name, mobile, national_id (+ birth_date شمسی، status)
+					- CREDIT_ALLOCATION: national_id, credit_limit, annual_interest_rate,
+					  repayment_months, allocation_token
+					  (+ valid_from/valid_until شمسی yyyyMMdd، status، currency)
 					حداکثر حجم فایل آپلود و فایل نتیجه قابل دانلود: ۱۰ مگابایت.
-					ستون‌های الزامی: first_name, last_name, mobile, national_id
-					ستون‌های اختیاری: birth_date شمسی، status
 					پس از پردازش، رکورد در فهرست ظاهر می‌شود و فایل نتیجه قابل دانلود است.
 					""")
 	public DataEntryUploadResponse upload(
@@ -81,7 +83,7 @@ public class DataEntryController {
 							mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE,
 							schema = @Schema(type = "string", format = "binary")))
 			@RequestPart("file") MultipartFile file,
-			@Parameter(description = "نوع فایل؛ فاز فعلی: USERS", required = true)
+			@Parameter(description = "نوع فایل: USERS یا CREDIT_ALLOCATION", required = true)
 			@RequestPart("fileType") String fileType,
 			@Parameter(hidden = true) @AuthenticationPrincipal Jwt jwt) {
 		return dataEntryService.upload(

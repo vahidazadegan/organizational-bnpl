@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0016-add-allocation-token-to-user-credits
+      author: organizational-bnpl
+      comment: Add non-null allocation token/signature for assigning credit to a user
+      changes:
+        - addColumn:
+            tableName: user_credits
+            columns:
+              - column:
+                  name: allocation_token
+                  type: varchar(5000)
+                  defaultValue: ""
+                  constraints:
+                    nullable: false

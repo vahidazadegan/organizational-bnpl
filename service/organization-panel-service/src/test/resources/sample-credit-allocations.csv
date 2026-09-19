@@ -1,0 +1,11 @@
+national_id,credit_limit,annual_interest_rate,repayment_months,allocation_token,valid_from,valid_until,status,currency
+0012345671,500000000,23.5000,12,tok_sample_ali_rezaei_credit_alloc_001,14040101,14041229,ACTIVE,IRR
+0012345672,300000000,18.0000,6,tok_sample_maryam_mohammadi_credit_alloc_002,14040101,14040631,ACTIVE,IRR
+0012345673,750000000,21.2500,18,tok_sample_hossein_karimi_credit_alloc_003,14040215,14051214,ACTIVE,IRR
+0012345674,200000000,0.0000,3,tok_sample_zahra_hoseini_credit_alloc_004,14040301,14040531,ACTIVE,IRR
+0012345675,1000000000,24.0000,24,tok_sample_mohammad_ahmadi_credit_alloc_005,14040101,14051229,ACTIVE,IRR
+0012345676,450000000,19.5000,12,tok_sample_fateme_nouri_credit_alloc_006,14040101,14041229,ACTIVE,IRR
+0012345677,600000000,22.0000,15,tok_sample_reza_jafari_credit_alloc_007,14040201,14050430,ACTIVE,IRR
+0012345678,350000000,16.7500,9,tok_sample_sara_mousavi_credit_alloc_008,14040315,14041215,ACTIVE,IRR
+0012345679,800000000,20.0000,18,tok_sample_amir_sadeghi_credit_alloc_009,14040101,14051229,ACTIVE,IRR
+0012345680,250000000,12.5000,6,tok_sample_negar_akbari_credit_alloc_010,14040401,14040930,ACTIVE,IRR
