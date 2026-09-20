@@ -2,6 +2,8 @@ package com.organizational.bnpl.panel.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -56,8 +58,9 @@ public class Installment {
 	@Column(name = "paid_at")
 	private Instant paidAt;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false, length = 30)
-	private String status;
+	private InstallmentStatus status;
 
 	@CreationTimestamp
 	@Column(name = "created_at", nullable = false, updatable = false)

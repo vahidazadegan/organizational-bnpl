@@ -6,7 +6,7 @@ import InboxOutlinedIcon from "@mui/icons-material/InboxOutlined";
 import InsertChartOutlinedIcon from "@mui/icons-material/InsertChartOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
+import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
 import TaskAltOutlinedIcon from "@mui/icons-material/TaskAltOutlined";
 import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
@@ -43,7 +43,7 @@ const menuSections: MenuSection[] = [
     items: [
       { label: "داشبورد", icon: DashboardOutlinedIcon, href: "/dashboard" },
       { label: "کاربران", icon: GroupsOutlinedIcon, href: "/dashboard/users" },
-      { label: "پروفایل", icon: PersonOutlineIcon },
+      { label: "خریدها", icon: ShoppingBagOutlinedIcon, href: "/dashboard/purchases" },
       { label: "وظایف", icon: TaskAltOutlinedIcon },
       { label: "جداول", icon: TableChartOutlinedIcon },
     ],

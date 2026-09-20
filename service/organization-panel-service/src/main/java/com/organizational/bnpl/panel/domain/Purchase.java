@@ -17,6 +17,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -58,6 +59,12 @@ public class Purchase {
 
 	@Column(name = "currency", nullable = false, length = 3)
 	private String currency = "IRR";
+
+	@Column(name = "annual_interest_rate", nullable = false, precision = 7, scale = 4)
+	private BigDecimal annualInterestRate = BigDecimal.ZERO;
+
+	@Column(name = "repayment_months", nullable = false)
+	private Integer repaymentMonths = 0;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false, length = 30)

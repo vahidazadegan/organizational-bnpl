@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0017-add-loan-terms-to-purchases
+      author: organizational-bnpl
+      comment: Freeze annual interest rate and repayment months on each purchase
+      changes:
+        - addColumn:
+            tableName: purchases
+            columns:
+              - column:
+                  name: annual_interest_rate
+                  type: numeric(7, 4)
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: repayment_months
+                  type: integer
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
