@@ -5,7 +5,7 @@ Spring Boot **4.0.8** backend for Organizational BNPL panel.
 ## Prerequisites
 
 - Java 21+
-- Maven Wrapper (`./mvnw`) included
+- Maven Wrapper at `service/` (`../mvnw` from this module)
 - PostgreSQL **18.6** (see `docker-compose-dev/`)
 
 ## Database
@@ -72,9 +72,9 @@ Authenticated sample:
 ## Run
 
 ```bash
-cd service/organization-panel-service
+cd service
 export JWT_SECRET='replace-with-a-long-random-secret-key'
-./mvnw spring-boot:run
+./mvnw -pl organization-panel-service spring-boot:run
 ```
 
 - API: [http://localhost:8080/api/health](http://localhost:8080/api/health)
@@ -91,7 +91,8 @@ springdoc-openapi serves Swagger UI. Use **Authorize** with a Bearer token from 
 Tests use in-memory H2 (`application-test.yml`) and a local JWT secret.
 
 ```bash
-./mvnw test
+cd service
+./mvnw -pl organization-panel-service test
 ```
 
 ## Package layout

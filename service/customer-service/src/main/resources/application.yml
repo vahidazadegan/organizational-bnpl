@@ -1,0 +1,33 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: customer-service
+
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:change-me-to-a-dev-secret-key-32b-min}
+      issuer: ${JWT_ISSUER:customer-service}
+      expiration-seconds: ${JWT_EXPIRATION_SECONDS:3600}
+  otp:
+    ttl-seconds: ${OTP_TTL_SECONDS:120}
+    length: ${OTP_LENGTH:6}
+    # Dev convenience: when set, OTP is always this value (logged on request)
+    fixed-code: ${OTP_FIXED_CODE:123456}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
