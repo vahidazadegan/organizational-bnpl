@@ -2,9 +2,11 @@ databaseChangeLog:
   - changeSet:
       id: 0019-purchase-merchant-fk
       author: organizational-bnpl
-      comment: FK purchases.merchant_id to merchants
+      comment: FK purchases.merchant_id to merchants (requires admin merchants table)
       preConditions:
         - onFail: MARK_RAN
+        - tableExists:
+            tableName: merchants
         - not:
             - foreignKeyConstraintExists:
                 foreignKeyName: fk_purchases_merchant
@@ -44,9 +46,11 @@ databaseChangeLog:
   - changeSet:
       id: 0019c-purchase-merchant-order-unique
       author: organizational-bnpl
-      comment: Partial unique index on merchant_id + order_number
+      comment: Partial unique index on merchant_id + order_number (PostgreSQL only)
       preConditions:
         - onFail: MARK_RAN
+        - dbms:
+            type: postgresql
         - sqlCheck:
             expectedResult: 0
             sql: >
