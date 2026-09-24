@@ -68,6 +68,7 @@ jobs:
             --exclude='*/node_modules' \
             --exclude='*/target' \
             --exclude='./deploy/.env' \
+            --exclude='./deploy/artifacts' \
             --exclude='*.local' \
             .
           cp -f /tmp/bnpl-release.tgz "${GITHUB_WORKSPACE}/bnpl-release.tgz"
@@ -86,9 +87,10 @@ jobs:
           printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          # Home dir: /tmp may hold a root-owned leftover that SSH_USER cannot overwrite.
           scp -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new \
-            bnpl-release.tgz "${SSH_USER}@${SSH_HOST}:/tmp/bnpl-release.tgz"
-          echo "Uploaded bnpl-release.tgz to ${SSH_HOST}:/tmp/bnpl-release.tgz"
+            bnpl-release.tgz "${SSH_USER}@${SSH_HOST}:~/bnpl-release.tgz"
+          echo "Uploaded bnpl-release.tgz to ${SSH_USER}@${SSH_HOST}:~/bnpl-release.tgz"
 
       - name: Extract and deploy over SSH
         uses: appleboy/ssh-action@v1.2.1
@@ -101,17 +103,25 @@ jobs:
           script: |
             set -euo pipefail
             DEPLOY_PATH='${{ secrets.DEPLOY_PATH }}'
+            RELEASE_TGZ="${HOME}/bnpl-release.tgz"
+            ENV_BAK="${HOME}/bnpl-deploy.env.bak"
             mkdir -p "${DEPLOY_PATH}"
 
-            if [[ -f "${DEPLOY_PATH}/deploy/.env" ]]; then
-              cp "${DEPLOY_PATH}/deploy/.env" /tmp/bnpl-deploy.env.bak
+            if [[ ! -f "${RELEASE_TGZ}" ]]; then
+              echo "Missing ${RELEASE_TGZ} — upload step did not land the archive." >&2
+              exit 1
             fi
 
-            tar -xzf /tmp/bnpl-release.tgz -C "${DEPLOY_PATH}"
+            if [[ -f "${DEPLOY_PATH}/deploy/.env" ]]; then
+              cp "${DEPLOY_PATH}/deploy/.env" "${ENV_BAK}"
+            fi
 
-            if [[ -f /tmp/bnpl-deploy.env.bak ]]; then
+            tar -xzf "${RELEASE_TGZ}" -C "${DEPLOY_PATH}"
+            rm -f "${RELEASE_TGZ}"
+
+            if [[ -f "${ENV_BAK}" ]]; then
               mkdir -p "${DEPLOY_PATH}/deploy"
-              mv /tmp/bnpl-deploy.env.bak "${DEPLOY_PATH}/deploy/.env"
+              mv "${ENV_BAK}" "${DEPLOY_PATH}/deploy/.env"
             fi
 
             if [[ ! -f "${DEPLOY_PATH}/deploy/.env" ]]; then

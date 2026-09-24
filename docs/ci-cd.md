@@ -8,7 +8,7 @@
 |------|--------|
 | CI | `.github/workflows/ci.yml` روی PR/`push` به `main` |
 | CD | `.github/workflows/deploy-test.yml` فقط با `workflow_dispatch` |
-| سرور | VPS + SSH؛ Actions کد را با SCP می‌فرستد، سپس Docker Compose |
+| سرور | VPS + SSH؛ Actions کد را می‌فرستد؛ **بیلد JAR/Next روی میزبان**؛ Docker فقط runtime |
 | Proxy | Caddy + HTTPS (Let’s Encrypt) |
 | اسرار اپ | فایل `deploy/.env` روی سرور (نه در GitHub) |
 
@@ -17,8 +17,11 @@
 ## پیش‌نیاز VPS
 
 1. Docker Engine + Compose plugin
-2. مسیر دیپلوی (مثلاً `/opt/organizational-bnpl`) — همان `DEPLOY_PATH`؛ خالی هم باشد کافی است (Actions پرش می‌کند)
-3. DNS برای دامنه پایه (`BASE_DOMAIN`)، مثلاً `bluestage.ir`:
+2. روی خود ماشین (نه داخل ایمیج):
+   - **Java 21** (`java -version`)
+   - **Node.js 22** + Corepack/pnpm (اسکریپت `pnpm@10.17.0` را فعال می‌کند)
+3. مسیر دیپلوی (مثلاً `/opt/organizational-bnpl`) — همان `DEPLOY_PATH`
+4. DNS برای دامنه پایه (`BASE_DOMAIN`)، مثلاً `bluestage.ir`:
 
    | نقش | هاست |
    |-----|------|
@@ -72,7 +75,9 @@ cp /opt/organizational-bnpl/deploy/.env.example /opt/organizational-bnpl/deploy/
 
 1. تغییرات را در `main` ادغام کن و صبر کن CI سبز شود
 2. Actions → **Deploy test** → Run workflow
-3. Workflow: چک CI → pack → SCP به VPS → extract → `SKIP_GIT_PULL=1 ./scripts/deploy-test.sh`
+3. Workflow: چک CI → pack → SCP → extract → `SKIP_GIT_PULL=1 ./scripts/deploy-test.sh`
+   - Maven و `pnpm build` روی VPS
+   - سپس `docker compose build` فقط برای بسته‌بندی JAR/standalone داخل ایمیج runtime
 
 ## Smoke
 
@@ -87,8 +92,8 @@ cp /opt/organizational-bnpl/deploy/.env.example /opt/organizational-bnpl/deploy/
 
 - `deploy/docker-compose.yml`
 - `deploy/Caddyfile`
-- `deploy/docker/Dockerfile.backend` (کش BuildKit: `bnpl-maven-repo-v2` + `bnpl-maven-wrapper-v2` با lock روی wrapper)
-- `deploy/docker/Dockerfile.ui` (کش pnpm store با id=`bnpl-pnpm-store`)
+- `deploy/docker/Dockerfile.backend` (فقط runtime؛ JAR از قبل روی میزبان ساخته شده)
+- `deploy/docker/Dockerfile.ui` (فقط runtime؛ خروجی Next standalone از میزبان)
 - `scripts/deploy-test.sh`
 
-بیلدهای بعدی روی همان VPS وابستگی‌های Maven/pnpm را دوباره از اینترنت نمی‌گیرند مگر نسخه عوض شود.
+کش وابستگی‌ها روی خود VPS می‌ماند: `~/.m2` و storeی pnpm.

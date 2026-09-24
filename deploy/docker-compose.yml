@@ -19,10 +19,7 @@ services:
 
   admin-service:
     build:
-      context: ../service
-      dockerfile: ../deploy/docker/Dockerfile.backend
-      args:
-        SERVICE_MODULE: admin-service
+      context: ./artifacts/backend/admin-service
     restart: unless-stopped
     depends_on:
       postgres:
@@ -43,10 +40,7 @@ services:
 
   organization-panel-service:
     build:
-      context: ../service
-      dockerfile: ../deploy/docker/Dockerfile.backend
-      args:
-        SERVICE_MODULE: organization-panel-service
+      context: ./artifacts/backend/organization-panel-service
     restart: unless-stopped
     depends_on:
       postgres:
@@ -69,10 +63,7 @@ services:
 
   customer-service:
     build:
-      context: ../service
-      dockerfile: ../deploy/docker/Dockerfile.backend
-      args:
-        SERVICE_MODULE: customer-service
+      context: ./artifacts/backend/customer-service
     restart: unless-stopped
     environment:
       SERVER_PORT: 8081
@@ -86,10 +77,7 @@ services:
 
   merchant-service:
     build:
-      context: ../service
-      dockerfile: ../deploy/docker/Dockerfile.backend
-      args:
-        SERVICE_MODULE: merchant-service
+      context: ./artifacts/backend/merchant-service
     restart: unless-stopped
     depends_on:
       postgres:
@@ -114,8 +102,6 @@ services:
     build:
       context: ../ui/admin-panel
       dockerfile: ../../deploy/docker/Dockerfile.ui
-      args:
-        NEXT_PUBLIC_API_BASE_URL: ${ADMIN_API_PUBLIC_URL:-https://api-admin.${BASE_DOMAIN}}
     restart: unless-stopped
     depends_on:
       - admin-service
@@ -127,8 +113,6 @@ services:
     build:
       context: ../ui/organization-panel
       dockerfile: ../../deploy/docker/Dockerfile.ui
-      args:
-        NEXT_PUBLIC_API_BASE_URL: ${PANEL_API_PUBLIC_URL:-https://api-org.${BASE_DOMAIN}}
     restart: unless-stopped
     depends_on:
       - organization-panel-service
@@ -140,8 +124,6 @@ services:
     build:
       context: ../ui/customer-app
       dockerfile: ../../deploy/docker/Dockerfile.ui
-      args:
-        NEXT_PUBLIC_API_BASE_URL: ${CUSTOMER_API_PUBLIC_URL:-https://api-app.${BASE_DOMAIN}}
     restart: unless-stopped
     depends_on:
       - customer-service
