@@ -17,11 +17,15 @@ set +a
 
 : "${BASE_DOMAIN:?BASE_DOMAIN must be set in deploy/.env}"
 
-echo "==> Updating repository on $(hostname)"
-cd "${ROOT}"
-git fetch origin main
-git checkout main
-git pull --ff-only origin main
+if [[ "${SKIP_GIT_PULL:-0}" == "1" ]]; then
+	echo "==> Skipping git pull (release already synced by Actions)"
+else
+	echo "==> Updating repository on $(hostname)"
+	cd "${ROOT}"
+	git fetch origin main
+	git checkout main
+	git pull --ff-only origin main
+fi
 
 echo "==> Building and starting stack"
 cd "${DEPLOY_DIR}"
