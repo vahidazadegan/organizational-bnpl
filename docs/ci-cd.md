@@ -22,14 +22,17 @@
    - `admin-test.` / `panel-test.` / `app-test.`
    - `api-admin-test.` / `api-panel-test.` / `api-customer-test.` / `api-merchant-test.`
 
-5. کپی تنظیمات:
+5. کپی تنظیمات و یک‌بار هم‌تراز کردن با `main`:
 
 ```bash
-cd /opt/organizational-bnpl
-cp deploy/.env.example deploy/.env
+cd /opt/organizational-bnpl   # همان DEPLOY_PATH
+git fetch origin main && git checkout main && git pull --ff-only origin main
+cp -n deploy/.env.example deploy/.env
 # مقادیر را ویرایش کن
 chmod +x scripts/deploy-test.sh
 ```
+
+> اگر `scripts/deploy-test.sh` بعد از pull هم نبود، `DEPLOY_PATH` اشتباه است یا کلون کامل نیست.
 
 6. کاربر SSH که Actions به آن وصل می‌شود باید بتواند `git` و `docker` را بدون پسورد اضافه اجرا کند (عضویت در گروه `docker` یا root با احتیاط).
 
