@@ -1,9 +1,14 @@
 # syntax=docker/dockerfile:1
-# Runtime-only image. Build the JAR on the host first, then set compose context to a
-# directory that contains app.jar (see scripts/deploy-test.sh).
-FROM eclipse-temurin:21-jre-jammy
+# Runtime-only image. Build the JAR on the host first (see scripts/deploy-test.sh).
+# Default avoids Docker Hub (often 403); override with JAVA_RUNTIME_IMAGE.
+ARG JAVA_IMAGE=public.ecr.aws/amazoncorretto/amazoncorretto:21
+FROM ${JAVA_IMAGE}
 WORKDIR /app
-RUN useradd --system --create-home --uid 10001 appuser
+RUN if command -v useradd >/dev/null 2>&1; then \
+		useradd --system --create-home --uid 10001 appuser; \
+	else \
+		adduser -D -u 10001 appuser; \
+	fi
 COPY app.jar /app/app.jar
 USER appuser
 EXPOSE 8080
