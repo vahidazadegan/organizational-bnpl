@@ -29,6 +29,8 @@ fi
 
 echo "==> Building and starting stack"
 cd "${DEPLOY_DIR}"
+export DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD=1
 "${COMPOSE[@]}" --env-file .env build
 "${COMPOSE[@]}" --env-file .env up -d --remove-orphans
 

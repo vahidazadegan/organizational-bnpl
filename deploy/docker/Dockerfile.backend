@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1
 # Build context: repository `service/` directory
+# Maven deps are cached on the build machine via BuildKit cache mounts (/root/.m2).
 ARG SERVICE_MODULE=organization-panel-service
 
 FROM eclipse-temurin:21-jdk-jammy AS build
@@ -15,8 +16,11 @@ COPY customer-service/pom.xml customer-service/
 COPY admin-service/pom.xml admin-service/
 COPY merchant-service/pom.xml merchant-service/
 
-RUN chmod +x mvnw \
-	&& ./mvnw -B -pl "${SERVICE_MODULE}" -am dependency:go-offline -DskipTests || true
+RUN chmod +x mvnw
+
+# Resolve dependencies first (layer + host BuildKit cache). Reused across all SERVICE_MODULE builds.
+RUN --mount=type=cache,id=bnpl-maven-m2,target=/root/.m2,sharing=shared \
+	./mvnw -B -pl "${SERVICE_MODULE}" -am dependency:go-offline -DskipTests
 
 COPY libs libs
 COPY organization-panel-service organization-panel-service
@@ -24,7 +28,8 @@ COPY customer-service customer-service
 COPY admin-service admin-service
 COPY merchant-service merchant-service
 
-RUN ./mvnw -B -pl "${SERVICE_MODULE}" -am package -DskipTests \
+RUN --mount=type=cache,id=bnpl-maven-m2,target=/root/.m2,sharing=shared \
+	./mvnw -B -pl "${SERVICE_MODULE}" -am package -DskipTests \
 	&& JAR="$(find "${SERVICE_MODULE}/target" -maxdepth 1 -type f -name "*.jar" ! -name "*.original" | head -n 1)" \
 	&& cp "${JAR}" /workspace/app.jar
 

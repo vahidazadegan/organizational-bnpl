@@ -87,6 +87,8 @@ cp /opt/organizational-bnpl/deploy/.env.example /opt/organizational-bnpl/deploy/
 
 - `deploy/docker-compose.yml`
 - `deploy/Caddyfile`
-- `deploy/docker/Dockerfile.backend`
-- `deploy/docker/Dockerfile.ui`
+- `deploy/docker/Dockerfile.backend` (کش BuildKit برای `/root/.m2` با id=`bnpl-maven-m2`)
+- `deploy/docker/Dockerfile.ui` (کش pnpm store با id=`bnpl-pnpm-store`)
 - `scripts/deploy-test.sh`
+
+بیلدهای بعدی روی همان VPS وابستگی‌های Maven/pnpm را دوباره از اینترنت نمی‌گیرند مگر نسخه عوض شود.
