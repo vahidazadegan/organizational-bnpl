@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Build context: repository `service/` directory
-# Maven deps are cached on the build machine via BuildKit cache mounts (/root/.m2).
+# Maven artifacts: BuildKit cache on the host (repo shared; wrapper locked to avoid races).
 ARG SERVICE_MODULE=organization-panel-service
 
 FROM eclipse-temurin:21-jdk-jammy AS build
@@ -18,8 +18,10 @@ COPY merchant-service/pom.xml merchant-service/
 
 RUN chmod +x mvnw
 
-# Resolve dependencies first (layer + host BuildKit cache). Reused across all SERVICE_MODULE builds.
-RUN --mount=type=cache,id=bnpl-maven-m2,target=/root/.m2,sharing=shared \
+# Wrapper install must be locked (parallel compose builds previously corrupted ~/.m2/wrapper).
+# Artifact repository stays shared across SERVICE_MODULE images.
+RUN --mount=type=cache,id=bnpl-maven-wrapper-v2,target=/root/.m2/wrapper,sharing=locked \
+	--mount=type=cache,id=bnpl-maven-repo-v2,target=/root/.m2/repository,sharing=shared \
 	./mvnw -B -pl "${SERVICE_MODULE}" -am dependency:go-offline -DskipTests
 
 COPY libs libs
@@ -28,7 +30,8 @@ COPY customer-service customer-service
 COPY admin-service admin-service
 COPY merchant-service merchant-service
 
-RUN --mount=type=cache,id=bnpl-maven-m2,target=/root/.m2,sharing=shared \
+RUN --mount=type=cache,id=bnpl-maven-wrapper-v2,target=/root/.m2/wrapper,sharing=locked \
+	--mount=type=cache,id=bnpl-maven-repo-v2,target=/root/.m2/repository,sharing=shared \
 	./mvnw -B -pl "${SERVICE_MODULE}" -am package -DskipTests \
 	&& JAR="$(find "${SERVICE_MODULE}/target" -maxdepth 1 -type f -name "*.jar" ! -name "*.original" | head -n 1)" \
 	&& cp "${JAR}" /workspace/app.jar
