@@ -55,7 +55,32 @@ jobs:
 
           echo "CI is green for ${SHA}"
 
-      - name: Deploy over SSH
+      # VPS does not need a GitHub Deploy Key: Actions ships the tree over SSH.
+      - name: Pack release
+        run: |
+          set -euo pipefail
+          tar -czf bnpl-release.tgz \
+            --exclude='./.git' \
+            --exclude='./graphify-out' \
+            --exclude='./.idea' \
+            --exclude='./node_modules' \
+            --exclude='*/node_modules' \
+            --exclude='*/target' \
+            --exclude='./deploy/.env' \
+            --exclude='*.local' \
+            .
+
+      - name: Upload release to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: bnpl-release.tgz
+          target: /tmp/
+          overwrite: true
+
+      - name: Extract and deploy over SSH
         uses: appleboy/ssh-action@v1.2.1
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -65,14 +90,31 @@ jobs:
           command_timeout: 60m
           script: |
             set -euo pipefail
-            cd "${{ secrets.DEPLOY_PATH }}"
-            git fetch origin main
-            git checkout main
-            git pull --ff-only origin main
-            if [[ ! -f scripts/deploy-test.sh ]]; then
-              echo "scripts/deploy-test.sh missing after pull — is DEPLOY_PATH a clone of this repo?" >&2
-              ls -la >&2 || true
+            DEPLOY_PATH='${{ secrets.DEPLOY_PATH }}'
+            mkdir -p "${DEPLOY_PATH}"
+
+            if [[ -f "${DEPLOY_PATH}/deploy/.env" ]]; then
+              cp "${DEPLOY_PATH}/deploy/.env" /tmp/bnpl-deploy.env.bak
+            fi
+
+            tar -xzf /tmp/bnpl-release.tgz -C "${DEPLOY_PATH}"
+
+            if [[ -f /tmp/bnpl-deploy.env.bak ]]; then
+              mkdir -p "${DEPLOY_PATH}/deploy"
+              mv /tmp/bnpl-deploy.env.bak "${DEPLOY_PATH}/deploy/.env"
+            fi
+
+            if [[ ! -f "${DEPLOY_PATH}/deploy/.env" ]]; then
+              echo "Missing ${DEPLOY_PATH}/deploy/.env" >&2
+              echo "On the VPS: cp ${DEPLOY_PATH}/deploy/.env.example ${DEPLOY_PATH}/deploy/.env && edit values" >&2
               exit 1
             fi
-            chmod +x scripts/deploy-test.sh
-            ./scripts/deploy-test.sh
+
+            if [[ ! -f "${DEPLOY_PATH}/scripts/deploy-test.sh" ]]; then
+              echo "scripts/deploy-test.sh missing after extract — check DEPLOY_PATH=${DEPLOY_PATH}" >&2
+              ls -la "${DEPLOY_PATH}" >&2 || true
+              exit 1
+            fi
+
+            chmod +x "${DEPLOY_PATH}/scripts/deploy-test.sh"
+            SKIP_GIT_PULL=1 "${DEPLOY_PATH}/scripts/deploy-test.sh"
