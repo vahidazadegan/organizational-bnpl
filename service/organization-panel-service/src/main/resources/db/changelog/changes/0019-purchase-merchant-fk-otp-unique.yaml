@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0019-purchase-merchant-fk
+      author: organizational-bnpl
+      comment: FK purchases.merchant_id to merchants (requires admin merchants table)
+      preConditions:
+        - onFail: MARK_RAN
+        - tableExists:
+            tableName: merchants
+        - not:
+            - foreignKeyConstraintExists:
+                foreignKeyName: fk_purchases_merchant
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: purchases
+            baseColumnNames: merchant_id
+            referencedTableName: merchants
+            referencedColumnNames: id
+            constraintName: fk_purchases_merchant
+  - changeSet:
+      id: 0019b-purchase-otp-columns
+      author: organizational-bnpl
+      comment: OTP columns on purchases for merchant confirm flow
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: purchases
+                columnName: otp_hash
+      changes:
+        - addColumn:
+            tableName: purchases
+            columns:
+              - column:
+                  name: otp_hash
+                  type: varchar(255)
+              - column:
+                  name: otp_expires_at
+                  type: timestamp
+              - column:
+                  name: otp_attempt_count
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 0019c-purchase-merchant-order-unique
+      author: organizational-bnpl
+      comment: Partial unique index on merchant_id + order_number (PostgreSQL only)
+      preConditions:
+        - onFail: MARK_RAN
+        - dbms:
+            type: postgresql
+        - sqlCheck:
+            expectedResult: 0
+            sql: >
+              SELECT COUNT(*) FROM pg_indexes
+              WHERE indexname = 'uk_purchases_merchant_order_number'
+      changes:
+        - sql:
+            sql: >
+              CREATE UNIQUE INDEX uk_purchases_merchant_order_number
+              ON purchases (merchant_id, order_number)
+              WHERE merchant_id IS NOT NULL AND order_number IS NOT NULL;

@@ -1,6 +1,6 @@
 package com.organizational.bnpl.panel.repository;
 
-import com.organizational.bnpl.panel.domain.Organization;
+import com.organizational.bnpl.panel.domain.identity.Organization;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,0 +1,31 @@
+{
+	email {$ACME_EMAIL}
+}
+
+admin-test.{$BASE_DOMAIN} {
+	reverse_proxy admin-panel:3000
+}
+
+panel-test.{$BASE_DOMAIN} {
+	reverse_proxy organization-panel:3000
+}
+
+app-test.{$BASE_DOMAIN} {
+	reverse_proxy customer-app:3000
+}
+
+api-admin-test.{$BASE_DOMAIN} {
+	reverse_proxy admin-service:8082
+}
+
+api-panel-test.{$BASE_DOMAIN} {
+	reverse_proxy organization-panel-service:8080
+}
+
+api-customer-test.{$BASE_DOMAIN} {
+	reverse_proxy customer-service:8081
+}
+
+api-merchant-test.{$BASE_DOMAIN} {
+	reverse_proxy merchant-service:8083
+}

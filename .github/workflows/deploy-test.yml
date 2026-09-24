@@ -1,0 +1,70 @@
+name: Deploy test
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: false
+
+permissions:
+  actions: read
+  contents: read
+  checks: read
+
+jobs:
+  deploy:
+    name: Deploy to test VPS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Require green CI for this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          SHA="$(git rev-parse HEAD)"
+          echo "Checking CI for ${SHA}"
+
+          # Latest completed CI run on main; must match this SHA and succeed.
+          RUN_JSON="$(gh run list \
+            --workflow ci.yml \
+            --branch main \
+            --limit 20 \
+            --json databaseId,headSha,conclusion,status,displayTitle)"
+
+          MATCH="$(echo "${RUN_JSON}" | jq -c --arg sha "${SHA}" '
+            map(select(.headSha == $sha and .status == "completed")) | .[0] // empty
+          ')"
+
+          if [[ -z "${MATCH}" ]]; then
+            echo "No completed CI run found for commit ${SHA} on main." >&2
+            echo "Push/merge to main and wait for CI, then re-run this workflow." >&2
+            exit 1
+          fi
+
+          CONCLUSION="$(echo "${MATCH}" | jq -r .conclusion)"
+          if [[ "${CONCLUSION}" != "success" ]]; then
+            echo "CI conclusion for ${SHA} is '${CONCLUSION}', expected success." >&2
+            exit 1
+          fi
+
+          echo "CI is green for ${SHA}"
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script_stop: true
+          command_timeout: 60m
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.DEPLOY_PATH }}"
+            chmod +x scripts/deploy-test.sh
+            ./scripts/deploy-test.sh

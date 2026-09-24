@@ -18,8 +18,12 @@
 	<description>Organizational BNPL backend services</description>
 
 	<modules>
+		<module>libs/domain</module>
+		<module>libs/dto</module>
 		<module>organization-panel-service</module>
 		<module>customer-service</module>
+		<module>admin-service</module>
+		<module>merchant-service</module>
 	</modules>
 
 	<properties>

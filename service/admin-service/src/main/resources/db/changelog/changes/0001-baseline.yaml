@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0001-baseline
+      author: organizational-bnpl
+      comment: Initial Liquibase baseline for admin-service
+      changes:
+        - tagDatabase:
+            tag: baseline

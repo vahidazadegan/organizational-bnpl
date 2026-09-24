@@ -1,18 +1,18 @@
 ---
-description: Database table names must be plural in organization-panel-service
-globs: service/organization-panel-service/**/*.{java,yaml,yml,sql}
+description: Database table names must be plural for BNPL JPA entities
+globs: service/{libs/domain,organization-panel-service,admin-service}/**/*.{java,yaml,yml,sql}
 alwaysApply: false
 ---
 
 # Plural database table names
 
-In `service/organization-panel-service`, **all database table names must be plural** (English plural form).
+In shared `service/libs/domain` entities and service Liquibase changelogs, **all database table names must be plural** (English plural form).
 
 ## Rules
 
 - JPA `@Table(name = "...")` must use the plural name (e.g. `organizations`, not `organization`).
 - Liquibase `createTable.tableName` and related constraints must match the same plural name.
-- Prefer snake_case plurals: `organizations`, `order_items`, `user_roles`.
+- Prefer snake_case plurals: `organizations`, `order_items`, `user_roles`, `admin_users`.
 - Entity class names stay singular (`Organization`); only the physical table is plural.
 - Do not rely on Hibernate default naming; always set `@Table(name = "...")` explicitly.
 

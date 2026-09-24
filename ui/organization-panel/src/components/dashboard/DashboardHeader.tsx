@@ -9,9 +9,13 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getStoredUser } from "@/lib/auth/session";
+import { useEffect, useSyncExternalStore } from "react";
+import { getStoredUser, subscribeSession } from "@/lib/auth/session";
 import type { PanelUser } from "@/types/auth";
+
+function getServerSnapshot(): PanelUser | null {
+  return null;
+}
 
 function displayName(user: PanelUser): string {
   return `${user.firstName} ${user.lastName}`.trim() || user.username;
@@ -26,18 +30,17 @@ function initials(user: PanelUser): string {
 
 export function DashboardHeader() {
   const router = useRouter();
-  const [user, setUser] = useState<PanelUser | null>(null);
-  const [ready, setReady] = useState(false);
+  const user = useSyncExternalStore(
+    subscribeSession,
+    getStoredUser,
+    getServerSnapshot,
+  );
 
   useEffect(() => {
-    const stored = getStoredUser();
-    if (!stored) {
+    if (!user) {
       router.replace("/login");
-      return;
     }
-    setUser(stored);
-    setReady(true);
-  }, [router]);
+  }, [user, router]);
 
   return (
     <Box
@@ -65,7 +68,7 @@ export function DashboardHeader() {
           داشبورد
         </Typography>
 
-        {!ready || !user ? (
+        {!user ? (
           <Stack direction="row" spacing={1.5} alignItems="center">
             <Skeleton variant="circular" width={40} height={40} />
             <Skeleton variant="text" width={96} height={20} />

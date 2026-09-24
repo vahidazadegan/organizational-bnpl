@@ -22,5 +22,12 @@ alwaysApply: true
 
 ```
 ui/organization-panel/                    # Next.js + Material 3 UI
-service/organization-panel-service/       # Spring Boot 4.0.8 backend
+ui/customer-app/                          # Customer Next.js app
+ui/admin-panel/                           # Admin Next.js app
+service/libs/domain/                      # Shared JPA entities (admin/, panel/)
+service/libs/dto/                         # Shared API DTOs (admin/, panel/, customer/, merchant/)
+service/organization-panel-service/       # Panel backend (8080)
+service/customer-service/                 # Customer backend (8081)
+service/admin-service/                    # Admin backend (8082); owns merchants
+service/merchant-service/                 # Merchant purchase API (8083)
 ```

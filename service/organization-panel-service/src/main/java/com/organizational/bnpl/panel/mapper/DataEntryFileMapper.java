@@ -1,7 +1,7 @@
 package com.organizational.bnpl.panel.mapper;
 
 import com.organizational.bnpl.panel.domain.DataEntryFile;
-import com.organizational.bnpl.panel.domain.PanelUser;
+import com.organizational.bnpl.panel.domain.identity.PanelUser;
 import com.organizational.bnpl.panel.dto.DataEntryFileResponse;
 import com.organizational.bnpl.panel.dto.DataEntryUploadResponse;
 import org.mapstruct.Mapper;

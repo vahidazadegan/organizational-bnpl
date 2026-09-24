@@ -87,12 +87,11 @@ function toPersianDigits(value: string | number): string {
 }
 
 function renderPersianPaginationItem(item: ComponentProps<typeof PaginationItem>) {
-  return (
-    <PaginationItem
-      {...item}
-      page={item.page != null ? toPersianDigits(item.page) : item.page}
-    />
-  );
+  const page =
+    typeof item.page === "number" || typeof item.page === "string"
+      ? toPersianDigits(item.page)
+      : item.page;
+  return <PaginationItem {...item} page={page} />;
 }
 
 function formatMoney(value: number, currency: string): string {

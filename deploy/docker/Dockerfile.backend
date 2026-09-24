@@ -1,0 +1,37 @@
+# syntax=docker/dockerfile:1
+# Build context: repository `service/` directory
+ARG SERVICE_MODULE=organization-panel-service
+
+FROM eclipse-temurin:21-jdk-jammy AS build
+ARG SERVICE_MODULE
+WORKDIR /workspace
+
+COPY .mvn/ .mvn/
+COPY mvnw pom.xml ./
+COPY libs/domain/pom.xml libs/domain/
+COPY libs/dto/pom.xml libs/dto/
+COPY organization-panel-service/pom.xml organization-panel-service/
+COPY customer-service/pom.xml customer-service/
+COPY admin-service/pom.xml admin-service/
+COPY merchant-service/pom.xml merchant-service/
+
+RUN chmod +x mvnw \
+	&& ./mvnw -B -pl "${SERVICE_MODULE}" -am dependency:go-offline -DskipTests || true
+
+COPY libs libs
+COPY organization-panel-service organization-panel-service
+COPY customer-service customer-service
+COPY admin-service admin-service
+COPY merchant-service merchant-service
+
+RUN ./mvnw -B -pl "${SERVICE_MODULE}" -am package -DskipTests \
+	&& JAR="$(find "${SERVICE_MODULE}/target" -maxdepth 1 -type f -name "*.jar" ! -name "*.original" | head -n 1)" \
+	&& cp "${JAR}" /workspace/app.jar
+
+FROM eclipse-temurin:21-jre-jammy AS runtime
+WORKDIR /app
+RUN useradd --system --create-home --uid 10001 appuser
+COPY --from=build /workspace/app.jar /app/app.jar
+USER appuser
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
