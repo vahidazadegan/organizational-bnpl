@@ -8,7 +8,6 @@ import {
   Button,
   CircularProgress,
   Link,
-  Paper,
   Stack,
   TextField,
   Typography,
@@ -117,24 +116,12 @@ export function LoginForm() {
   }
 
   return (
-    <Paper
-      elevation={0}
-      sx={{
-        width: "100%",
-        maxWidth: 420,
-        p: { xs: 3, sm: 4 },
-        borderRadius: 5,
-        bgcolor: "background.paper",
-        border: "1px solid",
-        borderColor: "divider",
-        boxShadow: "0 18px 50px rgba(15, 23, 42, 0.1)",
-      }}
-    >
       <Stack
         component="form"
         spacing={2.5}
         onSubmit={step === "mobile" ? handleRequestOtp : handleVerifyOtp}
         noValidate
+        sx={{ width: "100%" }}
       >
         <Stack alignItems="center" spacing={1} sx={{ mb: 1 }}>
           <Box
@@ -170,7 +157,7 @@ export function LoginForm() {
             type="tel"
             inputMode="numeric"
             autoComplete="tel"
-            placeholder="09123456789"
+            placeholder="۰۹۱۲۳۴۵۶۷۸۹"
             fullWidth
             required
             value={mobile}
@@ -267,6 +254,5 @@ export function LoginForm() {
           </Stack>
         ) : null}
       </Stack>
-    </Paper>
   );
 }

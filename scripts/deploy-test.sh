@@ -29,15 +29,17 @@ fi
 
 echo "==> Building and starting stack"
 cd "${DEPLOY_DIR}"
+export DOCKER_BUILDKIT=1
+export COMPOSE_DOCKER_CLI_BUILD=1
 "${COMPOSE[@]}" --env-file .env build
 "${COMPOSE[@]}" --env-file .env up -d --remove-orphans
 
 echo "==> Waiting for API health endpoints"
 apis=(
-	"https://api-admin-test.${BASE_DOMAIN}/api/health"
-	"https://api-panel-test.${BASE_DOMAIN}/api/health"
-	"https://api-customer-test.${BASE_DOMAIN}/api/health"
-	"https://api-merchant-test.${BASE_DOMAIN}/api/health"
+	"https://api-admin.${BASE_DOMAIN}/api/health"
+	"https://api-org.${BASE_DOMAIN}/api/health"
+	"https://api-app.${BASE_DOMAIN}/api/health"
+	"https://api-merchant.${BASE_DOMAIN}/api/health"
 )
 
 failures=0

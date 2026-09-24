@@ -42,6 +42,9 @@ export function clearSession(): void {
   localStorage.removeItem(USER_KEY);
 }
 
+const NETWORK_ERROR_MESSAGE =
+  "خطا در برقراری ارتباط با سرور. دوباره تلاش کنید.";
+
 function mapAuthError(status: number, fallback: string): Error {
   if (status === 400) {
     return new Error("اطلاعات وارد شده معتبر نیست");
@@ -55,40 +58,58 @@ function mapAuthError(status: number, fallback: string): Error {
   return new Error(fallback);
 }
 
+function toUserFacingError(error: unknown, fallback: string): Error {
+  if (error instanceof TypeError) {
+    return new Error(NETWORK_ERROR_MESSAGE);
+  }
+  if (error instanceof Error) {
+    return error;
+  }
+  return new Error(fallback);
+}
+
 export async function requestOtp(
   payload: OtpRequestPayload,
 ): Promise<OtpRequestResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/auth/otp/request`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/otp/request`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-  if (!response.ok) {
-    throw mapAuthError(
-      response.status,
-      "خطا در ارسال کد تأیید. دوباره تلاش کنید.",
-    );
+    if (!response.ok) {
+      throw mapAuthError(
+        response.status,
+        "خطا در ارسال کد تأیید. دوباره تلاش کنید.",
+      );
+    }
+
+    return (await response.json()) as OtpRequestResponse;
+  } catch (error) {
+    throw toUserFacingError(error, "خطا در ارسال کد تأیید. دوباره تلاش کنید.");
   }
-
-  return (await response.json()) as OtpRequestResponse;
 }
 
 export async function verifyOtp(
   payload: OtpVerifyPayload,
 ): Promise<LoginResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/auth/otp/verify`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/otp/verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-  if (!response.ok) {
-    throw mapAuthError(
-      response.status,
-      "خطا در تأیید کد. دوباره تلاش کنید.",
-    );
+    if (!response.ok) {
+      throw mapAuthError(
+        response.status,
+        "خطا در تأیید کد. دوباره تلاش کنید.",
+      );
+    }
+
+    return (await response.json()) as LoginResponse;
+  } catch (error) {
+    throw toUserFacingError(error, "خطا در تأیید کد. دوباره تلاش کنید.");
   }
-
-  return (await response.json()) as LoginResponse;
 }

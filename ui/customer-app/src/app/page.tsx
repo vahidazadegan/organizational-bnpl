@@ -1,4 +1,4 @@
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 import type { Metadata } from "next";
 import { LoginForm } from "@/components/login/LoginForm";
 
@@ -12,15 +12,15 @@ export default function LoginPage() {
     <Box
       component="main"
       sx={{
-        minHeight: "100vh",
+        flex: 1,
         display: "flex",
-        alignItems: "center",
-        bgcolor: "background.default",
+        flexDirection: "column",
+        justifyContent: "center",
+        px: 2.5,
+        py: 4,
       }}
     >
-      <Container maxWidth="sm" sx={{ py: 6, display: "flex", justifyContent: "center" }}>
-        <LoginForm />
-      </Container>
+      <LoginForm />
     </Box>
   );
 }

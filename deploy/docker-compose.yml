@@ -36,7 +36,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
       JWT_ISSUER: admin-service
-      APP_CORS_ALLOWED_ORIGINS: ${ADMIN_CORS_ORIGINS:-https://admin-test.${BASE_DOMAIN}}
+      APP_CORS_ALLOWED_ORIGINS: ${ADMIN_CORS_ORIGINS:-https://admin.${BASE_DOMAIN}}
     expose:
       - "8082"
     networks: [bnpl]
@@ -62,7 +62,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       JWT_ISSUER: organization-panel-service
-      APP_CORS_ALLOWED_ORIGINS: ${PANEL_CORS_ORIGINS:-https://panel-test.${BASE_DOMAIN}}
+      APP_CORS_ALLOWED_ORIGINS: ${PANEL_CORS_ORIGINS:-https://org.${BASE_DOMAIN}}
     expose:
       - "8080"
     networks: [bnpl]
@@ -78,7 +78,7 @@ services:
       SERVER_PORT: 8081
       JWT_SECRET: ${JWT_SECRET}
       JWT_ISSUER: customer-service
-      APP_CORS_ALLOWED_ORIGINS: ${CUSTOMER_CORS_ORIGINS:-https://app-test.${BASE_DOMAIN}}
+      APP_CORS_ALLOWED_ORIGINS: ${CUSTOMER_CORS_ORIGINS:-https://app.${BASE_DOMAIN}}
       OTP_FIXED_CODE: ${OTP_FIXED_CODE:-123456}
     expose:
       - "8081"
@@ -115,7 +115,7 @@ services:
       context: ../ui/admin-panel
       dockerfile: ../../deploy/docker/Dockerfile.ui
       args:
-        NEXT_PUBLIC_API_BASE_URL: ${ADMIN_API_PUBLIC_URL:-https://api-admin-test.${BASE_DOMAIN}}
+        NEXT_PUBLIC_API_BASE_URL: ${ADMIN_API_PUBLIC_URL:-https://api-admin.${BASE_DOMAIN}}
     restart: unless-stopped
     depends_on:
       - admin-service
@@ -128,7 +128,7 @@ services:
       context: ../ui/organization-panel
       dockerfile: ../../deploy/docker/Dockerfile.ui
       args:
-        NEXT_PUBLIC_API_BASE_URL: ${PANEL_API_PUBLIC_URL:-https://api-panel-test.${BASE_DOMAIN}}
+        NEXT_PUBLIC_API_BASE_URL: ${PANEL_API_PUBLIC_URL:-https://api-org.${BASE_DOMAIN}}
     restart: unless-stopped
     depends_on:
       - organization-panel-service
@@ -141,7 +141,7 @@ services:
       context: ../ui/customer-app
       dockerfile: ../../deploy/docker/Dockerfile.ui
       args:
-        NEXT_PUBLIC_API_BASE_URL: ${CUSTOMER_API_PUBLIC_URL:-https://api-customer-test.${BASE_DOMAIN}}
+        NEXT_PUBLIC_API_BASE_URL: ${CUSTOMER_API_PUBLIC_URL:-https://api-app.${BASE_DOMAIN}}
     restart: unless-stopped
     depends_on:
       - customer-service
