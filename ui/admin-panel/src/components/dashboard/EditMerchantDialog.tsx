@@ -11,7 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { clearSession } from "@/lib/auth/session";
 import { MerchantsApiError, updateMerchant } from "@/lib/merchants/api";
 import type { MerchantItem, UpdateMerchantRequest } from "@/types/merchant";
@@ -22,6 +22,14 @@ type FormState = {
   email: string;
 };
 
+function formFromMerchant(merchant: MerchantItem | null): FormState {
+  return {
+    name: merchant?.name ?? "",
+    phone: merchant?.phone ?? "",
+    email: merchant?.email ?? "",
+  };
+}
+
 type EditMerchantDialogProps = {
   open: boolean;
   merchant: MerchantItem | null;
@@ -29,6 +37,7 @@ type EditMerchantDialogProps = {
   onUpdated: (merchant: MerchantItem) => void;
 };
 
+/** Parent should remount via `key={merchant.id}` when opening so form seeds once. */
 export function EditMerchantDialog({
   open,
   merchant,
@@ -36,20 +45,9 @@ export function EditMerchantDialog({
   onUpdated,
 }: EditMerchantDialogProps) {
   const router = useRouter();
-  const [form, setForm] = useState<FormState>({ name: "", phone: "", email: "" });
+  const [form, setForm] = useState<FormState>(() => formFromMerchant(merchant));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (open && merchant) {
-      setForm({
-        name: merchant.name,
-        phone: merchant.phone ?? "",
-        email: merchant.email ?? "",
-      });
-      setError(null);
-    }
-  }, [open, merchant]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();

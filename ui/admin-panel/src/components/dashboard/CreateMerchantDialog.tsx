@@ -16,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { clearSession } from "@/lib/auth/session";
 import { createMerchant, MerchantsApiError } from "@/lib/merchants/api";
 import type {
@@ -45,6 +45,7 @@ type CreateMerchantDialogProps = {
   onCreated: (merchant: MerchantCreatedResponse) => void;
 };
 
+/** Parent should remount via `key` when opening so form state resets. */
 export function CreateMerchantDialog({
   open,
   onClose,
@@ -54,13 +55,6 @@ export function CreateMerchantDialog({
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (open) {
-      setForm(EMPTY_FORM);
-      setError(null);
-    }
-  }, [open]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();

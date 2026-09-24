@@ -270,6 +270,7 @@ export function OrganizationalUsersPage() {
       </Stack>
 
       <CreatePanelUserDialog
+        key={createOpen ? "create-panel-user-open" : "create-panel-user-closed"}
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         onCreated={handleUserCreated}

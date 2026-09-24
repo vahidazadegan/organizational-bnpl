@@ -104,7 +104,6 @@ export function MerchantsPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
-  const [menuMerchant, setMenuMerchant] = useState<MerchantItem | null>(null);
   const [actionMerchant, setActionMerchant] = useState<MerchantItem | null>(
     null,
   );
@@ -158,14 +157,12 @@ export function MerchantsPage() {
     merchant: MerchantItem,
   ) {
     setMenuAnchor(event.currentTarget);
-    setMenuMerchant(merchant);
     setActionMerchant(merchant);
     setActionError(null);
   }
 
   function closeRowMenu() {
     setMenuAnchor(null);
-    setMenuMerchant(null);
   }
 
   function clearActionMerchant() {
@@ -272,12 +269,18 @@ export function MerchantsPage() {
       </Stack>
 
       <CreateMerchantDialog
+        key={createOpen ? "create-merchant-open" : "create-merchant-closed"}
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         onCreated={handleCreated}
       />
 
       <EditMerchantDialog
+        key={
+          editOpen && actionMerchant
+            ? `edit-merchant-${actionMerchant.id}`
+            : "edit-merchant-closed"
+        }
         open={editOpen}
         merchant={actionMerchant}
         onClose={() => {

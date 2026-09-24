@@ -57,6 +57,7 @@ type CreatePanelUserDialogProps = {
   onCreated: (user: PanelUserItem) => void;
 };
 
+/** Parent should remount via `key` when opening so form state resets. */
 export function CreatePanelUserDialog({
   open,
   onClose,
@@ -75,11 +76,9 @@ export function CreatePanelUserDialog({
     }
 
     let cancelled = false;
-    setForm(EMPTY_FORM);
-    setError(null);
-    setLoadingOrgs(true);
 
     async function loadOrgs() {
+      setLoadingOrgs(true);
       try {
         const result = await listOrganizations();
         if (!cancelled) {

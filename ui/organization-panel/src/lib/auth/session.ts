@@ -4,19 +4,14 @@ import type { LoginRequest, LoginResponse, PanelUser } from "@/types/auth";
 const TOKEN_KEY = "panel_access_token";
 const USER_KEY = "panel_user";
 
-export function saveSession(login: LoginResponse): void {
-  localStorage.setItem(TOKEN_KEY, login.accessToken);
-  localStorage.setItem(USER_KEY, JSON.stringify(login.user));
+let cachedUser: PanelUser | null | undefined;
+const listeners = new Set<() => void>();
+
+function notifyListeners(): void {
+  listeners.forEach((listener) => listener());
 }
 
-export function getAccessToken(): string | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-  return localStorage.getItem(TOKEN_KEY);
-}
-
-export function getStoredUser(): PanelUser | null {
+function readUserFromStorage(): PanelUser | null {
   if (typeof window === "undefined") {
     return null;
   }
@@ -31,9 +26,42 @@ export function getStoredUser(): PanelUser | null {
   }
 }
 
+export function subscribeSession(onStoreChange: () => void): () => void {
+  listeners.add(onStoreChange);
+  return () => {
+    listeners.delete(onStoreChange);
+  };
+}
+
+export function saveSession(login: LoginResponse): void {
+  localStorage.setItem(TOKEN_KEY, login.accessToken);
+  localStorage.setItem(USER_KEY, JSON.stringify(login.user));
+  cachedUser = login.user;
+  notifyListeners();
+}
+
+export function getAccessToken(): string | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function getStoredUser(): PanelUser | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  if (cachedUser === undefined) {
+    cachedUser = readUserFromStorage();
+  }
+  return cachedUser;
+}
+
 export function clearSession(): void {
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
+  cachedUser = null;
+  notifyListeners();
 }
 
 export async function loginRequest(

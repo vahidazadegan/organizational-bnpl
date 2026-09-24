@@ -165,6 +165,7 @@ export function OrganizationsPage() {
       </Stack>
 
       <CreateOrganizationDialog
+        key={createOpen ? "create-org-open" : "create-org-closed"}
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         onCreated={() => setReloadToken((value) => value + 1)}

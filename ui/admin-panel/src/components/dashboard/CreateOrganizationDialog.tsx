@@ -15,7 +15,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { clearSession } from "@/lib/auth/session";
 import {
   createOrganization,
@@ -51,6 +51,7 @@ type CreateOrganizationDialogProps = {
   onCreated: (org: OrganizationItem) => void;
 };
 
+/** Parent should remount via `key` when opening so form state resets. */
 export function CreateOrganizationDialog({
   open,
   onClose,
@@ -60,13 +61,6 @@ export function CreateOrganizationDialog({
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (open) {
-      setForm(EMPTY_FORM);
-      setError(null);
-    }
-  }, [open]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
