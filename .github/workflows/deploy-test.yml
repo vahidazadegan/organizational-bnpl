@@ -59,7 +59,8 @@ jobs:
       - name: Pack release
         run: |
           set -euo pipefail
-          tar -czf bnpl-release.tgz \
+          # Write outside the tree so tar does not see the archive grow under `.`
+          tar -czf /tmp/bnpl-release.tgz \
             --exclude='./.git' \
             --exclude='./graphify-out' \
             --exclude='./.idea' \
@@ -69,6 +70,8 @@ jobs:
             --exclude='./deploy/.env' \
             --exclude='*.local' \
             .
+          cp -f /tmp/bnpl-release.tgz "${GITHUB_WORKSPACE}/bnpl-release.tgz"
+          ls -lh "${GITHUB_WORKSPACE}/bnpl-release.tgz"
 
       - name: Upload release to VPS
         uses: appleboy/scp-action@v0.1.7
