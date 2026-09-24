@@ -1,0 +1,181 @@
+name: bnpl-test
+
+services:
+  postgres:
+    image: postgres:18.6
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-bnpl_db}
+      POSTGRES_USER: ${DB_USER:-bnpl}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in deploy/.env}
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-bnpl} -d ${DB_NAME:-bnpl_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [bnpl]
+
+  admin-service:
+    build:
+      context: ../service
+      dockerfile: ../deploy/docker/Dockerfile.backend
+      args:
+        SERVICE_MODULE: admin-service
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8082
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-bnpl_db}
+      DB_USER: ${DB_USER:-bnpl}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      JWT_ISSUER: admin-service
+      APP_CORS_ALLOWED_ORIGINS: ${ADMIN_CORS_ORIGINS:-https://admin-test.${BASE_DOMAIN}}
+    expose:
+      - "8082"
+    networks: [bnpl]
+
+  organization-panel-service:
+    build:
+      context: ../service
+      dockerfile: ../deploy/docker/Dockerfile.backend
+      args:
+        SERVICE_MODULE: organization-panel-service
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      admin-service:
+        condition: service_started
+    environment:
+      SERVER_PORT: 8080
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-bnpl_db}
+      DB_USER: ${DB_USER:-bnpl}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: organization-panel-service
+      APP_CORS_ALLOWED_ORIGINS: ${PANEL_CORS_ORIGINS:-https://panel-test.${BASE_DOMAIN}}
+    expose:
+      - "8080"
+    networks: [bnpl]
+
+  customer-service:
+    build:
+      context: ../service
+      dockerfile: ../deploy/docker/Dockerfile.backend
+      args:
+        SERVICE_MODULE: customer-service
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: 8081
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: customer-service
+      APP_CORS_ALLOWED_ORIGINS: ${CUSTOMER_CORS_ORIGINS:-https://app-test.${BASE_DOMAIN}}
+      OTP_FIXED_CODE: ${OTP_FIXED_CODE:-123456}
+    expose:
+      - "8081"
+    networks: [bnpl]
+
+  merchant-service:
+    build:
+      context: ../service
+      dockerfile: ../deploy/docker/Dockerfile.backend
+      args:
+        SERVICE_MODULE: merchant-service
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      organization-panel-service:
+        condition: service_started
+    environment:
+      SERVER_PORT: 8083
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-bnpl_db}
+      DB_USER: ${DB_USER:-bnpl}
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_ISSUER: merchant-service
+      OTP_FIXED_CODE: ${OTP_FIXED_CODE:-123456}
+    expose:
+      - "8083"
+    networks: [bnpl]
+
+  admin-panel:
+    build:
+      context: ../ui/admin-panel
+      dockerfile: ../../deploy/docker/Dockerfile.ui
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${ADMIN_API_PUBLIC_URL:-https://api-admin-test.${BASE_DOMAIN}}
+    restart: unless-stopped
+    depends_on:
+      - admin-service
+    expose:
+      - "3000"
+    networks: [bnpl]
+
+  organization-panel:
+    build:
+      context: ../ui/organization-panel
+      dockerfile: ../../deploy/docker/Dockerfile.ui
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${PANEL_API_PUBLIC_URL:-https://api-panel-test.${BASE_DOMAIN}}
+    restart: unless-stopped
+    depends_on:
+      - organization-panel-service
+    expose:
+      - "3000"
+    networks: [bnpl]
+
+  customer-app:
+    build:
+      context: ../ui/customer-app
+      dockerfile: ../../deploy/docker/Dockerfile.ui
+      args:
+        NEXT_PUBLIC_API_BASE_URL: ${CUSTOMER_API_PUBLIC_URL:-https://api-customer-test.${BASE_DOMAIN}}
+    restart: unless-stopped
+    depends_on:
+      - customer-service
+    expose:
+      - "3000"
+    networks: [bnpl]
+
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    depends_on:
+      - admin-panel
+      - organization-panel
+      - customer-app
+      - admin-service
+      - organization-panel-service
+      - customer-service
+      - merchant-service
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      BASE_DOMAIN: ${BASE_DOMAIN:?set BASE_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL:-admin@localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [bnpl]
+
+networks:
+  bnpl:
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

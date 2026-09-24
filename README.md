@@ -15,6 +15,8 @@ service/                               # Maven multi-module (Spring Boot 4.0.8)
   customer-service/                    # Customer backend (port 8081)
   admin-service/                       # Admin backend (port 8082)
   merchant-service/                    # Merchant purchase API (port 8083)
+deploy/                                # Test-env Docker Compose + Caddy
+.github/workflows/                     # CI + manual deploy-test
 ```
 
 ## Backend
@@ -61,3 +63,10 @@ Panel UI: http://localhost:3000 · Panel API: http://localhost:8080
 Customer UI: http://localhost:3001 · Customer API: http://localhost:8081  
 Admin UI: http://localhost:3002 · Admin API: http://localhost:8082  
 Merchant API: http://localhost:8083
+
+## CI/CD (test environment)
+
+- **CI:** GitHub Actions on PR/`push` to `main` (Maven `verify` + UI lint/build)
+- **CD:** manual **Deploy test** workflow → SSH to VPS → `scripts/deploy-test.sh` (Docker Compose + Caddy)
+
+Setup (Secrets, DNS, branch protection): [docs/ci-cd.md](docs/ci-cd.md)
