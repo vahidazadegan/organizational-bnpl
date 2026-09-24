@@ -91,7 +91,7 @@ ensure_java_21() {
 	case "$(detect_pkg_manager)" in
 	apt)
 		run_root apt-get update -y
-		run_root DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-21-jdk-headless
+		run_root env DEBIAN_FRONTEND=noninteractive apt-get install -y openjdk-21-jdk-headless
 		;;
 	dnf)
 		run_root dnf install -y java-21-openjdk-devel
@@ -126,9 +126,9 @@ ensure_node_22() {
 	case "$(detect_pkg_manager)" in
 	apt)
 		run_root apt-get update -y
-		run_root DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl gnupg
+		run_root env DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl gnupg
 		curl -fsSL https://deb.nodesource.com/setup_22.x | run_root bash -
-		run_root DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
+		run_root env DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
 		;;
 	dnf)
 		curl -fsSL https://rpm.nodesource.com/setup_22.x | run_root bash -
