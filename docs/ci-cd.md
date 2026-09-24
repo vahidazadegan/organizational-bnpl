@@ -18,10 +18,17 @@
 
 1. Docker Engine + Compose plugin
 2. مسیر دیپلوی (مثلاً `/opt/organizational-bnpl`) — همان `DEPLOY_PATH`؛ خالی هم باشد کافی است (Actions پرش می‌کند)
-3. DNS برای دامنه پایه (`BASE_DOMAIN`):
+3. DNS برای دامنه پایه (`BASE_DOMAIN`)، مثلاً `bluestage.ir`:
 
-   - `admin-test.` / `panel-test.` / `app-test.`
-   - `api-admin-test.` / `api-panel-test.` / `api-customer-test.` / `api-merchant-test.`
+   | نقش | هاست |
+   |-----|------|
+   | Admin UI | `admin.$BASE_DOMAIN` |
+   | Org panel UI | `org.$BASE_DOMAIN` |
+   | Customer app | `app.$BASE_DOMAIN` |
+   | Admin API | `api-admin.$BASE_DOMAIN` |
+   | Org panel API | `api-org.$BASE_DOMAIN` |
+   | Customer API | `api-app.$BASE_DOMAIN` |
+   | Merchant API | `api-merchant.$BASE_DOMAIN` |
 
 4. یک‌بار ساخت `deploy/.env` روی سرور:
 
@@ -71,10 +78,10 @@ cp /opt/organizational-bnpl/deploy/.env.example /opt/organizational-bnpl/deploy/
 
 اسکریپت بعد از `up` به این آدرس‌ها `curl` می‌زند:
 
-- `https://api-admin-test.$BASE_DOMAIN/api/health`
-- `https://api-panel-test.$BASE_DOMAIN/api/health`
-- `https://api-customer-test.$BASE_DOMAIN/api/health`
-- `https://api-merchant-test.$BASE_DOMAIN/api/health`
+- `https://api-admin.$BASE_DOMAIN/api/health`
+- `https://api-org.$BASE_DOMAIN/api/health`
+- `https://api-app.$BASE_DOMAIN/api/health`
+- `https://api-merchant.$BASE_DOMAIN/api/health`
 
 ## فایل‌های مرتبط
 

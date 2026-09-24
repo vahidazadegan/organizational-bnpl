@@ -34,10 +34,10 @@ cd "${DEPLOY_DIR}"
 
 echo "==> Waiting for API health endpoints"
 apis=(
-	"https://api-admin-test.${BASE_DOMAIN}/api/health"
-	"https://api-panel-test.${BASE_DOMAIN}/api/health"
-	"https://api-customer-test.${BASE_DOMAIN}/api/health"
-	"https://api-merchant-test.${BASE_DOMAIN}/api/health"
+	"https://api-admin.${BASE_DOMAIN}/api/health"
+	"https://api-org.${BASE_DOMAIN}/api/health"
+	"https://api-app.${BASE_DOMAIN}/api/health"
+	"https://api-merchant.${BASE_DOMAIN}/api/health"
 )
 
 failures=0
