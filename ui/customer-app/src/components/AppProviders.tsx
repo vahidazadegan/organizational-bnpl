@@ -6,6 +6,7 @@ import rtlPlugin from "stylis-plugin-rtl";
 import { CssBaseline } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import { ThemeProvider } from "@mui/material/styles";
+import { MobileShell } from "@/components/layout/MobileShell";
 import { theme } from "@/theme";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
@@ -18,7 +19,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
     >
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {children}
+        <MobileShell>{children}</MobileShell>
       </ThemeProvider>
     </AppRouterCacheProvider>
   );

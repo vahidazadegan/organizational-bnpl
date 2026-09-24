@@ -97,8 +97,16 @@ export const theme = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
+        html: {
+          height: "100%",
+        },
         body: {
+          minHeight: "100%",
+          margin: 0,
           backgroundImage: "none",
+        },
+        "#__next": {
+          minHeight: "100%",
         },
       },
     },
