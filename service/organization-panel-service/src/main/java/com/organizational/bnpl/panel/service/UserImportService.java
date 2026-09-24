@@ -1,6 +1,6 @@
 package com.organizational.bnpl.panel.service;
 
-import com.organizational.bnpl.panel.domain.Organization;
+import com.organizational.bnpl.panel.domain.identity.Organization;
 import com.organizational.bnpl.panel.domain.User;
 import com.organizational.bnpl.panel.domain.UserOrganization;
 import com.organizational.bnpl.panel.dto.UserImportResponse;

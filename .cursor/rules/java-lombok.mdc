@@ -1,12 +1,12 @@
 ---
-description: Require Lombok for Java boilerplate in organization-panel-service
-globs: service/organization-panel-service/**/*.java
+description: Require Lombok for Java boilerplate in BNPL backend services and domain
+globs: service/{libs/domain,libs/dto,organization-panel-service,admin-service,customer-service}/**/*.java
 alwaysApply: false
 ---
 
 # Lombok for boilerplate
 
-In `service/organization-panel-service`, **always use Lombok** for boilerplate instead of hand-written getters, setters, constructors, `equals`/`hashCode`, or `toString`.
+In BNPL backend modules, **always use Lombok** for boilerplate instead of hand-written getters, setters, constructors, `equals`/`hashCode`, or `toString`.
 
 ## Required patterns
 

@@ -16,6 +16,16 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>com.organizational.bnpl</groupId>
+			<artifactId>domain</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.organizational.bnpl</groupId>
+			<artifactId>dto</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>

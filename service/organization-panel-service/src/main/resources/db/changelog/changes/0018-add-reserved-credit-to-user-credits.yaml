@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0018-add-reserved-credit-to-user-credits
+      author: organizational-bnpl
+      comment: Add reserved_credit for pending merchant purchase holds
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - columnExists:
+                tableName: user_credits
+                columnName: reserved_credit
+      changes:
+        - addColumn:
+            tableName: user_credits
+            columns:
+              - column:
+                  name: reserved_credit
+                  type: bigint
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

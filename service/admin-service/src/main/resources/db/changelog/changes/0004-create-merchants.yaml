@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0004-create-merchants
+      author: organizational-bnpl
+      comment: Create merchants table for BNPL merchant credentials and profile
+      preConditions:
+        - onFail: MARK_RAN
+        - not:
+            - tableExists:
+                tableName: merchants
+      changes:
+        - createTable:
+            tableName: merchants
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_merchants
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar(30)
+              - column:
+                  name: email
+                  type: varchar(255)
+              - column:
+                  name: access_id
+                  type: varchar(64)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: access_key_hash
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: merchants
+            columnNames: access_id
+            constraintName: uk_merchants_access_id

@@ -1,0 +1,58 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: admin-service
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:bnpl_db}
+    username: ${DB_USER:bnpl}
+    password: ${DB_PASSWORD:bnpl@nilva}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+    show-sql: false
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    database-change-log-table: admin_databasechangelog
+    database-change-log-lock-table: admin_databasechangeloglock
+
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:change-me-to-a-dev-secret-key-32b-min}
+      issuer: ${JWT_ISSUER:admin-service}
+      expiration-seconds: ${JWT_EXPIRATION_SECONDS:3600}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,db
+  endpoint:
+    health:
+      show-details: when_authorized
+  health:
+    db:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.organizational.bnpl.admin: DEBUG
+    liquibase: INFO

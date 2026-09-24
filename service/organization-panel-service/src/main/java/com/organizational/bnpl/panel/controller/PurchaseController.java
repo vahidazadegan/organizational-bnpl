@@ -1,26 +1,19 @@
 package com.organizational.bnpl.panel.controller;
 
-import com.organizational.bnpl.panel.dto.CreatePurchaseRequest;
 import com.organizational.bnpl.panel.dto.InstallmentResponse;
 import com.organizational.bnpl.panel.dto.PageResponse;
-import com.organizational.bnpl.panel.dto.PurchaseResponse;
 import com.organizational.bnpl.panel.dto.PurchaseSummaryResponse;
 import com.organizational.bnpl.panel.service.PurchaseService;
 import com.organizational.bnpl.panel.util.JwtUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
@@ -92,20 +85,5 @@ public class PurchaseController {
 				JwtUtils.getOrganizationId(jwt),
 				page,
 				size);
-	}
-
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	@Operation(
-			summary = "ثبت خرید BNPL",
-			description = """
-					خرید را روی اعتبار کاربر ثبت می‌کند، اقساط را بر اساس نرخ سود سالانه و
-					تعداد ماه بازپرداخت همان اعتبار می‌سازد، و usedCredit را افزایش می‌دهد.
-					سازمان از JWT خوانده می‌شود.
-					""")
-	public PurchaseResponse create(
-			@Valid @RequestBody CreatePurchaseRequest request,
-			@Parameter(hidden = true) @AuthenticationPrincipal Jwt jwt) {
-		return purchaseService.create(request, JwtUtils.getOrganizationId(jwt));
 	}
 }

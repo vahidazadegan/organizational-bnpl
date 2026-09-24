@@ -5,8 +5,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.organizational.bnpl.panel.domain.Organization;
-import com.organizational.bnpl.panel.domain.PanelUser;
+import com.organizational.bnpl.panel.domain.identity.Organization;
+import com.organizational.bnpl.panel.domain.identity.PanelUser;
 import com.organizational.bnpl.panel.repository.OrganizationRepository;
 import com.organizational.bnpl.panel.repository.PanelUserRepository;
 import com.organizational.bnpl.panel.security.PanelUserPrincipal;

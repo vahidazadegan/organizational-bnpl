@@ -1,6 +1,6 @@
 package com.organizational.bnpl.panel.repository;
 
-import com.organizational.bnpl.panel.domain.PanelUser;
+import com.organizational.bnpl.panel.domain.identity.PanelUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

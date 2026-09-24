@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 0003-seed-dev-admin
+      author: organizational-bnpl
+      comment: "Dev seed admin / admin123 (BCrypt)"
+      changes:
+        - insert:
+            tableName: admin_users
+            columns:
+              - column:
+                  name: id
+                  value: "00000000-0000-0000-0000-000000000001"
+              - column:
+                  name: username
+                  value: admin
+              - column:
+                  name: password_hash
+                  value: "$2b$10$coh/sj7WqiU3upEFp5A3ueWt/2ib7I.AOafPQvBulhk8a9n3NuF0a"
+              - column:
+                  name: first_name
+                  value: Admin
+              - column:
+                  name: last_name
+                  value: User
+              - column:
+                  name: email
+                  value: admin@example.com
+              - column:
+                  name: status
+                  value: ACTIVE
+              - column:
+                  name: created_at
+                  valueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  valueComputed: CURRENT_TIMESTAMP
