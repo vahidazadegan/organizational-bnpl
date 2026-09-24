@@ -74,14 +74,21 @@ jobs:
           ls -lh "${GITHUB_WORKSPACE}/bnpl-release.tgz"
 
       - name: Upload release to VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: bnpl-release.tgz
-          target: /tmp/
-          overwrite: true
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          test -f bnpl-release.tgz
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          scp -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new \
+            bnpl-release.tgz "${SSH_USER}@${SSH_HOST}:/tmp/bnpl-release.tgz"
+          echo "Uploaded bnpl-release.tgz to ${SSH_HOST}:/tmp/bnpl-release.tgz"
 
       - name: Extract and deploy over SSH
         uses: appleboy/ssh-action@v1.2.1
