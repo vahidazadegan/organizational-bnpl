@@ -17,9 +17,7 @@
 ## پیش‌نیاز VPS
 
 1. Docker Engine + Compose plugin
-2. روی خود ماشین (نه داخل ایمیج):
-   - **Java 21** (`java -version`)
-   - **Node.js 22** + Corepack/pnpm (اسکریپت `pnpm@10.17.0` را فعال می‌کند)
+2. روی خود ماشین: اسکریپت در صورت نبودن، **Java 21** و **Node.js 22** را نصب می‌کند (نیاز به `sudo` بدون پسورد یا اجرا با root)
 3. مسیر دیپلوی (مثلاً `/opt/organizational-bnpl`) — همان `DEPLOY_PATH`
 4. DNS برای دامنه پایه (`BASE_DOMAIN`)، مثلاً `bluestage.ir`:
 
